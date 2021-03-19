@@ -2,7 +2,7 @@
 
 ## Pathfinding algorithms comparison
 
-This repository contains a project made for a course in University of Helsinki, [Data structures and algorithms project course](https://studies.helsinki.fi/opintotarjonta/cur/hy-opt-cur-2021-321edaed-44d9-43f6-8ff6-161d4d587320/Aineopintojen_harjoitusty%C3%B6_Tietorakenteet_ja_algoritmit_periodi_IV_).
+This repository contains a project made for a course in University of Helsinki, [Data structures and algorithms project course](https://tiralabra.github.io/2021_p4/en/). The goal is to implement a program that you can use to compare various different path finding algorithms. It is written completely in Java as that is the preferred language in this course.
 
 ## Documentation
 [Specifications](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/specifications.md)
