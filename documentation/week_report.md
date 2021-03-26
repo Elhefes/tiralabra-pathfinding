@@ -1,3 +1,6 @@
+## Week 2
+I started implementing the actual program. I started with building a simple user interface to display some maps on, so it would be easy to see if the algorithms would work right from the start. I also managed to add checkstyle to the project after lots of error troubleshooting with gradle. I plan on starting to code the logic of the algorithms this weekend.
+
 ## Week 1
 After familiarizing myself with the course material, I initialized the project with Gradle and setup Git. I also read some online materials on different path finding algorithms such as Dijkstra, A* and IDA*. After that I started to write some basic documentation.
 
