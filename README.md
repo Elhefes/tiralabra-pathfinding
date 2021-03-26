@@ -14,3 +14,21 @@ This repository contains a project made for a course in University of Helsinki, 
 [Manual](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/user_manual.md)
 
 [Weekly progress reports](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/week_report.md)
+
+## Gradle
+The project comes with gradle. You should run gradle commands from the tiralabra-pathfinding/tiralabra-pathfinding folder.
+
+### Run the program
+```
+gradle run
+```
+
+### Generate checkstyle report
+```
+gradle check
+```
+or 
+```
+gradle checkstyleMain
+```
+The checkstyle report will be generated to *tiralabra-pathfinding/tiralabra-pathfinding/build/reports/checkstyle/main.html*

@@ -1,6 +1,20 @@
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'application'
+apply plugin: 'checkstyle'
+
+checkstyle {
+    toolVersion '8.36.1'
+}
+
+checkstyleMain {
+    configFile file('checkstyle.xml')
+    source = 'src/main/java'
+}
+
+checkstyleTest {
+    source = 'src/test/java'
+}
 
 jacocoTestReport {
     reports {
@@ -18,5 +32,5 @@ repositories {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
