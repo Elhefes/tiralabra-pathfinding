@@ -20,10 +20,9 @@ public class MapParser {
 
             for (int y = 0; y < height; y++) {
                 String row = scanner.nextLine();
-
+                
                 for (int x = 0; x < width; x++) {
                     mapArray[y][x] = row.charAt(x);
-                    System.out.print(row.charAt(x));
                 }
             }
             return mapArray;
