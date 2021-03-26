@@ -11,7 +11,7 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-mainClassName = 'tiralabra.pathfinding.Main'
+mainClassName = 'tiralabra.pathfinding.ui.Main'
 
 repositories {
     jcenter()
