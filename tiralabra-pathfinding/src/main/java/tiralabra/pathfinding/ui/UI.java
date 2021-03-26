@@ -1,6 +1,6 @@
 package tiralabra.pathfinding.ui;
 
-import tiralabra.pathfinding.parser.*;
+import tiralabra.pathfinding.parser.MapParser;
 import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    final int RECT_SIZE = 1;        
+    private final int RECT_SIZE = 1;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane grid;
@@ -43,8 +43,11 @@ public class UI extends Application {
         for (int x = 0; x < mapHeight; x++) {
             for (int y = 0; y < mapLength; y++) {
                 Rectangle rect = new Rectangle(RECT_SIZE, RECT_SIZE);
-                if (parisMap[y][x] == '.') rect.setFill(Color.LIGHTGRAY);
-                else rect.setFill(Color.BLACK);
+                if (parisMap[y][x] == '.') {
+                    rect.setFill(Color.LIGHTGRAY);
+                } else {
+                    rect.setFill(Color.BLACK);
+                }
                 grid.add(rect, x, y);
             }
         }

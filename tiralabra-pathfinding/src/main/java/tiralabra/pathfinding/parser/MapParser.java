@@ -8,6 +8,12 @@ import java.util.Scanner;
  * @author henripal
  */
 public class MapParser {
+    
+    /**
+     * Parses a map file into an array of characters.
+     * @param file map file.
+     * @return A map as a two-dimensional array of characters.
+     */
     public char[][] parseMap(File file) {
         try {
             Scanner scanner = new Scanner(file);
