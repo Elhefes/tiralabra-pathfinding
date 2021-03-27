@@ -22,13 +22,15 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int rectSize = 1;        
+    private final int rectSize = 2;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane mapGrid;
     private Rectangle[][] rectMap;
     private Button dijkstraButton;
+    private Button resetButton;
     private Dijkstra dijkstra;
+    private char[][] parisMap;
     
     @Override
     public void start(Stage mainStage) throws Exception {        
@@ -43,7 +45,7 @@ public class UI extends Application {
         defaultScene = new Scene(borderPane);
         
         MapParser mapParser = new MapParser();
-        char[][] parisMap = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
+        parisMap = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
         
         int mapHeight = parisMap.length;
         int mapLength = parisMap[0].length;
@@ -83,7 +85,10 @@ public class UI extends Application {
         dijkstraButton = new Button("Dijkstra");
         dijkstraButton.setPrefSize(120, 20);
         
-        bottomBar.getChildren().addAll(dijkstraButton);
+        resetButton = new Button("Reset");
+        resetButton.setPrefSize(120, 20);
+        
+        bottomBar.getChildren().addAll(dijkstraButton, resetButton);
         
         dijkstraButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -91,8 +96,31 @@ public class UI extends Application {
                 dijkstra.findShortestPath(20, 20, 500, 480);
             }            
         });
+        
+        resetButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {                
+                resetMap();
+            }            
+        });
 
         return bottomBar;
+    }
+    
+    void resetMap() {
+        for (int x = 0; x < parisMap[0].length; x++) {
+            for (int y = 0; y < parisMap.length; y++) {
+                Rectangle rect = rectMap[y][x];
+                if (parisMap[y][x] == '.') {
+                    rect.setFill(Color.LIGHTGRAY);
+                } else {
+                    rect.setFill(Color.BLACK);
+                }
+            }
+        }
+        
+        dijkstra = new Dijkstra(parisMap);    
+        dijkstra.setMap(rectMap);
     }
 
 }
