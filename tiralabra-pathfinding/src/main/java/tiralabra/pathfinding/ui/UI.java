@@ -1,13 +1,18 @@
 package tiralabra.pathfinding.ui;
 
 import tiralabra.pathfinding.parser.MapParser;
+import tiralabra.pathfinding.algorithms.Dijkstra;
 import java.io.File;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -17,46 +22,77 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int RECT_SIZE = 1;        
+    private final int rectSize = 1;        
     private BorderPane borderPane;
     private Scene defaultScene;
-    private GridPane grid;
+    private GridPane mapGrid;
+    private Rectangle[][] rectMap;
+    private Button dijkstraButton;
+    private Dijkstra dijkstra;
     
     @Override
     public void start(Stage mainStage) throws Exception {        
         mainStage.setTitle("Pathfinding visualizer");
 
         borderPane = new BorderPane();
-        grid = new GridPane();
-        BorderPane.setAlignment(grid, Pos.CENTER);
-        BorderPane.setMargin(grid, new Insets(10, 10, 10, 10));
-        borderPane.setCenter(grid);
+        mapGrid = new GridPane();
+        BorderPane.setAlignment(mapGrid, Pos.CENTER);
+        BorderPane.setMargin(mapGrid, new Insets(10, 10, 10, 10));
+        borderPane.setCenter(mapGrid);
+        borderPane.setRight(addRightBar());
         defaultScene = new Scene(borderPane);
         
         MapParser mapParser = new MapParser();
         char[][] parisMap = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
-        System.out.println("Loaded map.");
         
         int mapHeight = parisMap.length;
         int mapLength = parisMap[0].length;
         
+        rectMap = new Rectangle[mapHeight][mapLength];        
+        
         for (int x = 0; x < mapHeight; x++) {
             for (int y = 0; y < mapLength; y++) {
-                Rectangle rect = new Rectangle(RECT_SIZE, RECT_SIZE);
+                Rectangle rect = new Rectangle(rectSize, rectSize);
                 if (parisMap[y][x] == '.') {
                     rect.setFill(Color.LIGHTGRAY);
                 } else {
                     rect.setFill(Color.BLACK);
                 }
-                grid.add(rect, x, y);
+                mapGrid.add(rect, x, y);
+                rectMap[y][x] = rect;
             }
         }
+        
+        dijkstra = new Dijkstra(parisMap);    
+        dijkstra.setMap(rectMap);
         
         mainStage.setMinWidth(mapLength + 400);
         mainStage.setMinHeight(mapHeight);
 
         mainStage.setScene(defaultScene);
         mainStage.show();
+        
+    }
+    
+    public HBox addRightBar() {
+        HBox bottomBar = new HBox();
+        bottomBar.setPadding(new Insets(15, 12, 15, 12));
+        bottomBar.setSpacing(10);
+        bottomBar.setStyle("-fx-background-color: #336699;");
+
+        dijkstraButton = new Button("Dijkstra");
+        dijkstraButton.setPrefSize(120, 20);
+        
+        bottomBar.getChildren().addAll(dijkstraButton);
+        
+        dijkstraButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {                
+                dijkstra.findShortestPath(20, 20, 500, 480);
+            }            
+        });
+
+        return bottomBar;
     }
 
 }

@@ -11,7 +11,7 @@ public class MapParser {
     
     /**
      * Parses a map file into an array of characters.
-     * @param file map file.
+     * @param file map as a text file.
      * @return A map as a two-dimensional array of characters.
      */
     public char[][] parseMap(File file) {
