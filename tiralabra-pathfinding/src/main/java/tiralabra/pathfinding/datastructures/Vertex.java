@@ -8,6 +8,7 @@ public class Vertex implements Comparable<Vertex> {
     private int x;
     private int y;
     private double distance;
+    private Vertex previousVertex;
     
     public Vertex(int x, int y) {
         this.x = x;
@@ -37,6 +38,14 @@ public class Vertex implements Comparable<Vertex> {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public Vertex getPreviousVertex() {
+        return previousVertex;
+    }
+
+    public void setPreviousVertex(Vertex previousVertex) {
+        this.previousVertex = previousVertex;
     }
     
     public int compareTo(Vertex vertex) {

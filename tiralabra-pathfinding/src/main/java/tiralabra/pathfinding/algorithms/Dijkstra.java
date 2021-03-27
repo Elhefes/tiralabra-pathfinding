@@ -31,7 +31,17 @@ public class Dijkstra {
         }
     }
     
-    public void findShortestPath(int startX, int startY, int endX, int endY) {
+    /***
+     * Finds the shortest path from start point to the
+     * end point with Dijkstra's algorithm.
+     * 
+     * @param startX starting node's x coordinate.
+     * @param startY starting node's y coordinate.
+     * @param endX ending node's x coordinate.
+     * @param endY ending node's y coordinate.
+     * @return the shortest path as an boolean array.
+     */
+    public boolean[][] findShortestPath(int startX, int startY, int endX, int endY) {
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         
@@ -40,12 +50,12 @@ public class Dijkstra {
         
         while (!heap.isEmpty()) {
             Vertex vertex = heap.poll();
-            if (visited[vertex.getY()][vertex.getX()]) {
-                continue;
-            }
+            
             if (vertex.getX() == endX && vertex.getY() == endY) {
                 System.out.println("found shortest path");
-                return;
+                generateFinalPath(new Vertex(endX, endY));
+                
+                return path;
             }    
             
             visited[vertex.getY()][vertex.getX()] = true;
@@ -53,42 +63,43 @@ public class Dijkstra {
             processNeighbours(vertex);
             
         }
+        return null;
         
     }
     
     /***
      * The method goes through every neighbour of the vertex
      * and checks if they are available to be processed. If
-     * they are it adds them to the heap.
+     * they are it adds them to the heap so that Dijkstra
+     * can process them.
      * 
      * @param vertex the vertex which neighbours need to be processed.
      */
     private void processNeighbours(Vertex vertex) {
         int startX = vertex.getX();
         int startY = vertex.getY();
-        //System.out.println(startX + " " +startY);
         
         for (int x = startX - 1; x <= startX + 1; x++) {
             for (int y = startY - 1; y <= startY + 1; y++) {
-                if (x == startX && y == startY) {
+                if ((x == startX && y == startY)) {
                     continue;
                 }
                 
-                //System.out.println("x: " + x + ", y: " + y);
-                if (isInWithinMapLimits(x, y) && map[y][x] == '.') {
-                    double nextVertexesDistance = distance[y][x];
+                if (isInWithinMapLimits(x, y) && map[y][x] == '.' && !visited[y][x]) {
                     double currentDistance = vertex.getDistance();
                     double distanceToNextVertex = 1;
                     
                     //diagonal neighbours
-                    if (x != 0 && y != 0) {
+                    if (x != startX && y != startY) {
                         distanceToNextVertex = Math.sqrt(2);
                     }
                     
                     double newDistance = currentDistance + distanceToNextVertex;
-                    if (newDistance < nextVertexesDistance) {
+                    if (newDistance < distance[y][x]) {
                         distance[y][x] = newDistance;
-                        heap.add(new Vertex(x, y));
+                        Vertex newVertex = new Vertex(x, y);
+                        newVertex.setPreviousVertex(vertex);
+                        heap.add(newVertex);
                     }
                 }
             }
@@ -104,6 +115,20 @@ public class Dijkstra {
      */
     private boolean isInWithinMapLimits(int x, int y) {
         return (x > 0 && x < map[0].length && y > 0 && y < map.length);
+    }
+    
+    /***
+     * Generates the final path which Dijkstra found.
+     * 
+     * @param lastVertex the last vertex of the path.
+     */
+    private void generateFinalPath(Vertex lastVertex) {
+        path[lastVertex.getY()][lastVertex.getX()] = true;
+        
+        Vertex previousVertex = lastVertex.getPreviousVertex();
+        if (previousVertex != null) {
+            generateFinalPath(previousVertex);
+        }
     }
     
     //temporary function for dijstra visualisation

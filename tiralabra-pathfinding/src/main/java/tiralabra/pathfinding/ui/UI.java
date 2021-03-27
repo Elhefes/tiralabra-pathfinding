@@ -93,7 +93,11 @@ public class UI extends Application {
         dijkstraButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {                
-                dijkstra.findShortestPath(20, 20, 500, 480);
+                boolean[][] path = dijkstra.findShortestPath(20, 20, 500, 480);
+                if (path != null) {
+                    System.out.println("drawing");
+                    drawMap(path);
+                }
             }            
         });
         
@@ -107,7 +111,18 @@ public class UI extends Application {
         return bottomBar;
     }
     
-    void resetMap() {
+    private void drawMap(boolean[][] path) {
+        for (int x = 0; x < path[0].length; x++) {
+            for (int y = 0; y < path.length; y++) {
+                Rectangle rect = rectMap[y][x];
+                if (path[y][x] == true) {
+                    rect.setFill(Color.GREEN);
+                }
+            }
+        }
+    }
+    
+    private void resetMap() {
         for (int x = 0; x < parisMap[0].length; x++) {
             for (int y = 0; y < parisMap.length; y++) {
                 Rectangle rect = rectMap[y][x];
