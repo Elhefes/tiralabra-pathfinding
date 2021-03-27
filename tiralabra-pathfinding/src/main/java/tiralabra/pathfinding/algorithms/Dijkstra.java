@@ -49,7 +49,7 @@ public class Dijkstra {
             }    
             
             visited[vertex.getY()][vertex.getX()] = true;
-            rectMap[vertex.getX()][vertex.getY()].setFill(javafx.scene.paint.Color.RED);
+            rectMap[vertex.getY()][vertex.getX()].setFill(javafx.scene.paint.Color.RED);
             processNeighbours(vertex);
             
         }
