@@ -13,7 +13,9 @@ This repository contains a project made for a course in University of Helsinki, 
 
 [Manual](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/user_manual.md)
 
-[Weekly progress reports](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/week_report.md)
+## Weekly progress reports
+* [Week 1](documentation/week_report.md#week-1)
+* [Week 2](documentation/week_report.md#week-2)
 
 ## Gradle
 The project comes with gradle. You should run gradle commands from the tiralabra-pathfinding/tiralabra-pathfinding folder.
