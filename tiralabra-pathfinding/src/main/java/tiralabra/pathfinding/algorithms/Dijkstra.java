@@ -14,7 +14,7 @@ public class Dijkstra {
     private double distance[][];
     private boolean path[][];
     private PriorityQueue<Vertex> heap;
-    private Rectangle[][] rectMap;
+    private Vertex lastVertex;
     
     public Dijkstra(char[][] map) {
         this.map = map;
@@ -45,26 +45,22 @@ public class Dijkstra {
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         
-        Vertex currentVertex = new Vertex(startX, startY);
-        heap.add(currentVertex);
+        Vertex firstVertex = new Vertex(startX, startY, null);
+        heap.add(firstVertex);
         
         while (!heap.isEmpty()) {
             Vertex vertex = heap.poll();
             
             if (vertex.getX() == endX && vertex.getY() == endY) {
-                System.out.println("found shortest path");
-                generateFinalPath(new Vertex(endX, endY));
-                
-                return path;
+                lastVertex = vertex;
             }    
             
             visited[vertex.getY()][vertex.getX()] = true;
-            rectMap[vertex.getY()][vertex.getX()].setFill(javafx.scene.paint.Color.RED);
             processNeighbours(vertex);
             
         }
-        return null;
-        
+        generateFinalPath(lastVertex);
+        return path;
     }
     
     /***
@@ -97,8 +93,7 @@ public class Dijkstra {
                     double newDistance = currentDistance + distanceToNextVertex;
                     if (newDistance < distance[y][x]) {
                         distance[y][x] = newDistance;
-                        Vertex newVertex = new Vertex(x, y);
-                        newVertex.setPreviousVertex(vertex);
+                        Vertex newVertex = new Vertex(x, y, vertex);
                         heap.add(newVertex);
                     }
                 }
@@ -131,8 +126,4 @@ public class Dijkstra {
         }
     }
     
-    //temporary function for dijstra visualisation
-    public void setMap(Rectangle[][] rectMap) {
-        this.rectMap = rectMap;
-    }
 }

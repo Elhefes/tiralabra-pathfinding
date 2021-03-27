@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int rectSize = 2;        
+    private final int rectSize = 1;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane mapGrid;
@@ -65,8 +65,7 @@ public class UI extends Application {
             }
         }
         
-        dijkstra = new Dijkstra(parisMap);    
-        dijkstra.setMap(rectMap);
+        dijkstra = new Dijkstra(parisMap);
         
         mainStage.setMinWidth(mapLength + 400);
         mainStage.setMinHeight(mapHeight);
@@ -95,7 +94,6 @@ public class UI extends Application {
             public void handle(MouseEvent me) {                
                 boolean[][] path = dijkstra.findShortestPath(20, 20, 500, 480);
                 if (path != null) {
-                    System.out.println("drawing");
                     drawMap(path);
                 }
             }            
@@ -134,8 +132,7 @@ public class UI extends Application {
             }
         }
         
-        dijkstra = new Dijkstra(parisMap);    
-        dijkstra.setMap(rectMap);
+        dijkstra = new Dijkstra(parisMap);
     }
 
 }

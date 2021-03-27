@@ -10,10 +10,11 @@ public class Vertex implements Comparable<Vertex> {
     private double distance;
     private Vertex previousVertex;
     
-    public Vertex(int x, int y) {
+    public Vertex(int x, int y, Vertex previousVertex) {
         this.x = x;
         this.y = y;
         this.distance = 0;
+        this.previousVertex = previousVertex;
     }
 
     public int getX() {
