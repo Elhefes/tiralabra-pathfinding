@@ -27,12 +27,15 @@ public class UI extends Application {
     private Scene defaultScene;
     private GridPane mapGrid;
     private Rectangle[][] rectMap;
+    private Button changeMapButton;
     private Button dijkstraButton;
-    private Button resetButton;
+    private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
     private Dijkstra dijkstra;
-    private char[][] parisMap;
+    private Logic logic;
+    private MapParser mapParser;
+    private char[][] map;
     private int startX = -1;
     private int startY = -1;
     private int endX = -1;
@@ -50,18 +53,19 @@ public class UI extends Application {
         borderPane.setRight(addRightBar());
         defaultScene = new Scene(borderPane);
         
-        MapParser mapParser = new MapParser();
-        parisMap = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
+        logic = new Logic();
+        mapParser = new MapParser();
+        map = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
         
-        int mapHeight = parisMap.length;
-        int mapLength = parisMap[0].length;
+        int mapHeight = map.length;
+        int mapLength = map[0].length;
         
         rectMap = new Rectangle[mapHeight][mapLength];        
         
         for (int x = 0; x < mapHeight; x++) {
             for (int y = 0; y < mapLength; y++) {
                 Rectangle rect = addSquare();
-                if (parisMap[y][x] == '.') {
+                if (map[y][x] == '.') {
                     rect.setFill(Color.LIGHTGRAY);
                 } else {
                     rect.setFill(Color.BLACK);
@@ -71,14 +75,13 @@ public class UI extends Application {
             }
         }
         
-        dijkstra = new Dijkstra(parisMap);
+        dijkstra = new Dijkstra(map);
         
         mainStage.setMinWidth(mapLength + 400);
         mainStage.setMinHeight(mapHeight);
 
         mainStage.setScene(defaultScene);
         mainStage.show();
-        
     }
     
     private Rectangle addSquare() {
@@ -88,7 +91,7 @@ public class UI extends Application {
             int rectX = GridPane.getColumnIndex(rect);
             int rectY = GridPane.getRowIndex(rect);
             
-            if (parisMap[rectY][rectX] != '.') {
+            if (map[rectY][rectX] != '.') {
                 return;
             }
             
@@ -116,12 +119,15 @@ public class UI extends Application {
         rightBar.setPadding(new Insets(15, 12, 15, 12));
         rightBar.setSpacing(10);
         rightBar.setStyle("-fx-background-color: #336699;");
+        
+        changeMapButton = new Button("Change map");
+        changeMapButton.setPrefSize(120, 20);
 
         dijkstraButton = new Button("Dijkstra");
         dijkstraButton.setPrefSize(120, 20);
         
-        resetButton = new Button("Reset");
-        resetButton.setPrefSize(120, 20);
+        clearMapButton = new Button("Clear map");
+        clearMapButton.setPrefSize(120, 20);
         
         setStartButton = new ToggleButton("Set start");
         setStartButton.setPrefSize(120, 20);
@@ -129,7 +135,13 @@ public class UI extends Application {
         setEndButton = new ToggleButton("Set end");
         setEndButton.setPrefSize(120, 20);
         
-        rightBar.getChildren().addAll(dijkstraButton, resetButton, setStartButton, setEndButton);
+        rightBar.getChildren().addAll(changeMapButton, dijkstraButton, clearMapButton, setStartButton, setEndButton);
+        
+        changeMapButton.setOnMouseClicked((MouseEvent) -> {
+            File mapFile = logic.chooseFile();
+            map = mapParser.parseMap(mapFile);
+            resetMap();
+        });
         
         dijkstraButton.setOnMouseClicked((MouseEvent) -> {
             setStartButton.setSelected(false);
@@ -144,7 +156,7 @@ public class UI extends Application {
             }
         });
         
-        resetButton.setOnMouseClicked((MouseEvent) -> {
+        clearMapButton.setOnMouseClicked((MouseEvent) -> {
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
             resetMap();            
@@ -178,10 +190,10 @@ public class UI extends Application {
         endX = -1;
         endY = -1;
             
-        for (int x = 0; x < parisMap[0].length; x++) {
-            for (int y = 0; y < parisMap.length; y++) {
+        for (int x = 0; x < map[0].length; x++) {
+            for (int y = 0; y < map.length; y++) {
                 Rectangle rect = rectMap[y][x];
-                if (parisMap[y][x] == '.') {
+                if (map[y][x] == '.') {
                     rect.setFill(Color.LIGHTGRAY);
                 } else {
                     rect.setFill(Color.BLACK);
@@ -189,7 +201,7 @@ public class UI extends Application {
             }
         }
         
-        dijkstra = new Dijkstra(parisMap);
+        dijkstra = new Dijkstra(map);
     }
 
 }
