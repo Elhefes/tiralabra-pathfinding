@@ -139,8 +139,10 @@ public class UI extends Application {
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
             File mapFile = logic.chooseFile();
-            map = mapParser.parseMap(mapFile);
-            resetMap();
+            if (mapFile != null) {
+                map = mapParser.parseMap(mapFile);
+                resetMap();
+            }
         });
         
         dijkstraButton.setOnMouseClicked((MouseEvent) -> {
