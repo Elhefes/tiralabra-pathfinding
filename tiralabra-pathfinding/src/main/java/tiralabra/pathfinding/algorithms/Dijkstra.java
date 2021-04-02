@@ -14,7 +14,6 @@ public class Dijkstra {
     private double distance[][];
     private boolean path[][];
     private PriorityQueue<Vertex> heap;
-    private Vertex lastVertex;
     
     public Dijkstra(char[][] map) {
         this.map = map;
@@ -45,21 +44,27 @@ public class Dijkstra {
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         
-        Vertex firstVertex = new Vertex(startX, startY, null);
+        Vertex firstVertex = new Vertex(startX, startY, 0, null);
         heap.add(firstVertex);
         
         while (!heap.isEmpty()) {
             Vertex vertex = heap.poll();
+            int x = vertex.getX();
+            int y = vertex.getY();
+            
+            if (visited[y][x]) {
+                continue;
+            }
             
             if (vertex.getX() == endX && vertex.getY() == endY) {
-                lastVertex = vertex;
-            }    
+                generateFinalPath(vertex);
+                System.out.println("Shortest distance: " + distance[endY][endX]);
+                return path;
+            }
             
-            visited[vertex.getY()][vertex.getX()] = true;
+            visited[y][x] = true;
             processNeighbours(vertex);
-            
         }
-        generateFinalPath(lastVertex);
         return path;
     }
     
@@ -81,11 +86,11 @@ public class Dijkstra {
                     continue;
                 }
                 
-                if (isInWithinMapLimits(x, y) && map[y][x] == '.' && !visited[y][x]) {
-                    double currentDistance = vertex.getDistance();
+                if (isWithinMapLimits(x, y) && map[y][x] == '.') {
+                    double currentDistance = distance[startY][startX];
                     double distanceToNextVertex = 1;
                     
-                    //diagonal neighbours
+                    //Diagonal neighbours
                     if (x != startX && y != startY) {
                         distanceToNextVertex = Math.sqrt(2);
                     }
@@ -93,7 +98,7 @@ public class Dijkstra {
                     double newDistance = currentDistance + distanceToNextVertex;
                     if (newDistance < distance[y][x]) {
                         distance[y][x] = newDistance;
-                        Vertex newVertex = new Vertex(x, y, vertex);
+                        Vertex newVertex = new Vertex(x, y, newDistance, vertex);
                         heap.add(newVertex);
                     }
                 }
@@ -102,27 +107,28 @@ public class Dijkstra {
     }
     
     /***
-     * Checks whether the coordinates are out of map.
+     * Checks whether the coordinates are inside of map.
      * 
-     * @param x x-coordinate of the vertex
-     * @param y y-coordinate of the vertex
-     * @return whether the coordinates are out of bounds
+     * @param x x-coordinate of the vertex.
+     * @param y y-coordinate of the vertex.
+     * @return whether the coordinates are inside of the map bounds.
      */
-    private boolean isInWithinMapLimits(int x, int y) {
+    private boolean isWithinMapLimits(int x, int y) {
         return (x > 0 && x < map[0].length && y > 0 && y < map.length);
     }
     
     /***
      * Generates the final path which Dijkstra found.
      * 
-     * @param lastVertex the last vertex of the path.
+     * @param vertex the last vertex of the path.
      */
-    private void generateFinalPath(Vertex lastVertex) {
-        path[lastVertex.getY()][lastVertex.getX()] = true;
-        
-        Vertex previousVertex = lastVertex.getPreviousVertex();
-        if (previousVertex != null) {
-            generateFinalPath(previousVertex);
+    private void generateFinalPath(Vertex vertex) {
+        while (true) {
+            path[vertex.getY()][vertex.getX()] = true;
+            vertex = vertex.getPreviousVertex();
+            if (vertex == null) {
+                break;
+            }
         }
     }
     

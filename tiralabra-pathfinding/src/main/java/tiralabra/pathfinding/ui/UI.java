@@ -145,6 +145,8 @@ public class UI extends Application {
         });
         
         resetButton.setOnMouseClicked((MouseEvent) -> {
+            setStartButton.setSelected(false);
+            setEndButton.setSelected(false);
             resetMap();            
         });
         
