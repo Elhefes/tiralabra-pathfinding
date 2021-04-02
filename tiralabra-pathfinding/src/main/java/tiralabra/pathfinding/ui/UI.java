@@ -4,15 +4,15 @@ import tiralabra.pathfinding.parser.MapParser;
 import tiralabra.pathfinding.algorithms.Dijkstra;
 import java.io.File;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -22,15 +22,21 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int rectSize = 1;        
+    private final int rectSize = 2;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane mapGrid;
     private Rectangle[][] rectMap;
     private Button dijkstraButton;
     private Button resetButton;
+    private ToggleButton setStartButton;
+    private ToggleButton setEndButton;
     private Dijkstra dijkstra;
     private char[][] parisMap;
+    private int startX = -1;
+    private int startY = -1;
+    private int endX = -1;
+    private int endY = -1;
     
     @Override
     public void start(Stage mainStage) throws Exception {        
@@ -54,7 +60,7 @@ public class UI extends Application {
         
         for (int x = 0; x < mapHeight; x++) {
             for (int y = 0; y < mapLength; y++) {
-                Rectangle rect = new Rectangle(rectSize, rectSize);
+                Rectangle rect = addSquare();
                 if (parisMap[y][x] == '.') {
                     rect.setFill(Color.LIGHTGRAY);
                 } else {
@@ -75,11 +81,41 @@ public class UI extends Application {
         
     }
     
-    public HBox addRightBar() {
-        HBox bottomBar = new HBox();
-        bottomBar.setPadding(new Insets(15, 12, 15, 12));
-        bottomBar.setSpacing(10);
-        bottomBar.setStyle("-fx-background-color: #336699;");
+    private Rectangle addSquare() {
+        Rectangle rect = new Rectangle(rectSize, rectSize);
+        
+        rect.setOnMousePressed((MouseEvent e) -> {
+            int rectX = GridPane.getColumnIndex(rect);
+            int rectY = GridPane.getRowIndex(rect);
+            
+            if (parisMap[rectY][rectX] != '.') {
+                return;
+            }
+            
+            if (setStartButton.isSelected()) {
+                if (startX != -1) {
+                    rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                }
+                startX = rectX;
+                startY = rectY;
+                rectMap[rectY][rectX].setFill(Color.RED);
+            } else if (setEndButton.isSelected()) {
+                if (endX != -1) {
+                    rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                }
+                endX = rectX;
+                endY = rectY;
+                rectMap[rectY][rectX].setFill(Color.RED);
+            }
+        });
+        return rect;
+    }
+    
+    public VBox addRightBar() {
+        VBox rightBar = new VBox();
+        rightBar.setPadding(new Insets(15, 12, 15, 12));
+        rightBar.setSpacing(10);
+        rightBar.setStyle("-fx-background-color: #336699;");
 
         dijkstraButton = new Button("Dijkstra");
         dijkstraButton.setPrefSize(120, 20);
@@ -87,26 +123,40 @@ public class UI extends Application {
         resetButton = new Button("Reset");
         resetButton.setPrefSize(120, 20);
         
-        bottomBar.getChildren().addAll(dijkstraButton, resetButton);
+        setStartButton = new ToggleButton("Set start");
+        setStartButton.setPrefSize(120, 20);
         
-        dijkstraButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent me) {                
-                boolean[][] path = dijkstra.findShortestPath(20, 20, 500, 480);
+        setEndButton = new ToggleButton("Set end");
+        setEndButton.setPrefSize(120, 20);
+        
+        rightBar.getChildren().addAll(dijkstraButton, resetButton, setStartButton, setEndButton);
+        
+        dijkstraButton.setOnMouseClicked((MouseEvent) -> {
+            setStartButton.setSelected(false);
+            setEndButton.setSelected(false);
+            if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
+                boolean[][] path = dijkstra.findShortestPath(startX, startY, endX, endY);
                 if (path != null) {
                     drawMap(path);
                 }
-            }            
+            } else {
+                System.out.println("Before running the pathfinder you must provide the start and end points!");
+            }
         });
         
-        resetButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent me) {                
-                resetMap();
-            }            
+        resetButton.setOnMouseClicked((MouseEvent) -> {
+            resetMap();            
+        });
+        
+        setStartButton.setOnMouseClicked((MouseEvent) -> {
+            setEndButton.setSelected(false);            
+        });
+        
+        setEndButton.setOnMouseClicked((MouseEvent) -> {
+            setStartButton.setSelected(false);            
         });
 
-        return bottomBar;
+        return rightBar;
     }
     
     private void drawMap(boolean[][] path) {
@@ -121,6 +171,11 @@ public class UI extends Application {
     }
     
     private void resetMap() {
+        startX = -1;
+        startY = -1;
+        endX = -1;
+        endY = -1;
+            
         for (int x = 0; x < parisMap[0].length; x++) {
             for (int y = 0; y < parisMap.length; y++) {
                 Rectangle rect = rectMap[y][x];
