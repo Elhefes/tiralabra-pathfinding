@@ -1,7 +1,6 @@
 package tiralabra.pathfinding.algorithms;
 
 import java.util.PriorityQueue;
-import javafx.scene.shape.Rectangle;
 import tiralabra.pathfinding.datastructures.Vertex;
 
 /**
@@ -30,7 +29,7 @@ public class Dijkstra {
         }
     }
     
-    /***
+    /**
      * Finds the shortest path from start point to the
      * end point with Dijkstra's algorithm.
      * 
@@ -40,6 +39,7 @@ public class Dijkstra {
      * @param endY ending node's y coordinate.
      * @return the shortest path as an boolean array.
      */
+    
     public boolean[][] findShortestPath(int startX, int startY, int endX, int endY) {
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
@@ -68,7 +68,7 @@ public class Dijkstra {
         return path;
     }
     
-    /***
+    /**
      * The method goes through every neighbour of the vertex
      * and checks if they are available to be processed. If
      * they are it adds them to the heap so that Dijkstra
@@ -106,7 +106,7 @@ public class Dijkstra {
         }
     }
     
-    /***
+    /**
      * Checks whether the coordinates are inside of map.
      * 
      * @param x x-coordinate of the vertex.
@@ -117,7 +117,7 @@ public class Dijkstra {
         return (x > 0 && x < map[0].length && y > 0 && y < map.length);
     }
     
-    /***
+    /**
      * Generates the final path which Dijkstra found.
      * 
      * @param vertex the last vertex of the path.
