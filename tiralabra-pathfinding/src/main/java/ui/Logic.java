@@ -15,7 +15,7 @@ public class Logic {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Map files", "map");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(null);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             return chooser.getSelectedFile();
         }
         return null;
