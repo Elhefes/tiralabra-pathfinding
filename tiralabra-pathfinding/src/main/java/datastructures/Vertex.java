@@ -1,4 +1,4 @@
-package tiralabra.pathfinding.datastructures;
+package datastructures;
 
 /**
  *

@@ -23,14 +23,14 @@ jacocoTestReport {
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['tiralabra/pathfinding/ui**'])
+            fileTree(dir: it, exclude: ['**/ui/**'])
 	}))
     }
 }
 
 check.dependsOn jacocoTestReport
 
-mainClassName = 'tiralabra.pathfinding.ui.Main'
+mainClassName = 'ui.Main'
 
 repositories {
     jcenter()

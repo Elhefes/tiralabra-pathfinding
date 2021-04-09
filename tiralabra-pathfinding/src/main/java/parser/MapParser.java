@@ -1,4 +1,4 @@
-package tiralabra.pathfinding.parser;
+package parser;
 
 import java.io.File;
 import java.util.Scanner;

@@ -1,7 +1,7 @@
-package tiralabra.pathfinding.ui;
+package ui;
 
-import tiralabra.pathfinding.parser.MapParser;
-import tiralabra.pathfinding.algorithms.Dijkstra;
+import parser.MapParser;
+import algorithms.Dijkstra;
 import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;

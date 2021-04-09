@@ -1,4 +1,4 @@
-package tiralabra.pathfinding.ui;
+package ui;
 import javafx.application.Application;
 
 /**

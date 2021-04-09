@@ -1,4 +1,4 @@
-package tiralabra.pathfinding.ui;
+package ui;
 
 import java.io.File;
 import javax.swing.JFileChooser;

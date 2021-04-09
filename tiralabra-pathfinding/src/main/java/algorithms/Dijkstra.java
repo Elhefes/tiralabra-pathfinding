@@ -1,7 +1,7 @@
-package tiralabra.pathfinding.algorithms;
+package algorithms;
 
 import java.util.PriorityQueue;
-import tiralabra.pathfinding.datastructures.Vertex;
+import datastructures.Vertex;
 
 /**
  *
