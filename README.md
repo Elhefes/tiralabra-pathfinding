@@ -2,7 +2,7 @@
 
 ## Pathfinding algorithms comparison
 
-This repository contains a project made for a course in University of Helsinki, [Data structures and algorithms project course](https://tiralabra.github.io/2021_p4/en/). The goal is to implement a program that you can use to compare various different path finding algorithms. It is written completely in Java as that is the preferred language in this course.
+This repository contains a project made for a course in University of Helsinki, [Data structures and algorithms project course](https://tiralabra.github.io/2021_p4/en/). The goal is to implement a program that you can use to compare various different path finding algorithms. It is written in Java as that is the preferred language in this course.
 
 ## Documentation
 * [Specifications](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/specifications.md)
@@ -15,7 +15,7 @@ This repository contains a project made for a course in University of Helsinki, 
 * [Week 1](documentation/week_report.md#week-1)
 
 ## Gradle
-The project comes with gradle. You should run gradle commands from the tiralabra-pathfinding/tiralabra-pathfinding folder.
+The project uses Gradle for easy running, testing and building. You should run gradle commands from the tiralabra-pathfinding/tiralabra-pathfinding folder.
 
 ### Run the program
 ```
@@ -30,4 +30,20 @@ or
 ```
 gradle checkstyleMain
 ```
-The checkstyle report will be generated to *tiralabra-pathfinding/tiralabra-pathfinding/build/reports/checkstyle/main.html*
+The checkstyle report will be generated to *tiralabra-pathfinding/build/reports/checkstyle/main.html*
+
+### Unit tests
+You run the unit tests with command
+
+```
+gradle test
+```
+A report of the unit tests will be generated to *tiralabra-pathfinding/build/reports/tests/test/index.html*
+
+### Jacoco test coverage
+You can generate jacoco test coverage report with
+
+```
+gradle jacocoTestReport
+```
+The report will be generated to *tiralabra-pathfinding/build/reports/jacoco/test/html/index.html*

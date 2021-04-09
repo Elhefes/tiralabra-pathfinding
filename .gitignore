@@ -25,3 +25,5 @@ hs_err_pid*
 # Gradle and build files
 /tiralabra-pathfinding/.gradle/
 /tiralabra-pathfinding/build/
+
+/tiralabra-pathfinding/nbproject/
