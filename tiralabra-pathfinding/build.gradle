@@ -8,7 +8,6 @@ checkstyle {
 }
 
 checkstyleMain {
-    configFile file('checkstyle.xml')
     source = 'src/main/java'
 }
 
