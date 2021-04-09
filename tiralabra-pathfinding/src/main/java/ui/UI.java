@@ -39,8 +39,6 @@ public class UI extends Application {
     private TextField startYTextField;
     private TextField endXTextField;
     private TextField endYTextField;
-    private Label validStartLabel;
-    private Label validEndLabel;
     private Dijkstra dijkstra;
     private Logic logic;
     private MapParser mapParser;
@@ -113,7 +111,6 @@ public class UI extends Application {
                 rectMap[rectY][rectX].setFill(Color.RED);
                 startXTextField.setText(String.valueOf(rectX));
                 startYTextField.setText(String.valueOf(rectY));
-                validStartLabel.setText("");
             } else if (setEndButton.isSelected()) {
                 if (endX != -1) {
                     rectMap[endY][endX].setFill(Color.LIGHTGRAY);
@@ -123,7 +120,6 @@ public class UI extends Application {
                 rectMap[rectY][rectX].setFill(Color.BLUE);
                 endXTextField.setText(String.valueOf(rectX));
                 endYTextField.setText(String.valueOf(rectY));
-                validEndLabel.setText("");
             }
         });
         return rect;
@@ -147,14 +143,11 @@ public class UI extends Application {
         setStartButton = new ToggleButton("Set start");
         setStartButton.setPrefSize(120, 20);
         
-        validStartLabel = new Label("Invalid starting position!");
-        validEndLabel = new Label("Invalid ending position!");
-        
         HBox startCoordinatesHBox = new HBox();
         startCoordinatesHBox.setSpacing(5);
-        startXTextField = new TextField();
+        startXTextField = new TextField("0");
         startXTextField.setMaxWidth(50);
-        startYTextField = new TextField();
+        startYTextField = new TextField("0");
         startYTextField.setMaxWidth(50);
         
         startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y"), startYTextField);
@@ -164,9 +157,9 @@ public class UI extends Application {
         
         HBox endCoordinatesHBox = new HBox();
         endCoordinatesHBox.setSpacing(5);
-        endXTextField = new TextField();
+        endXTextField = new TextField("0");
         endXTextField.setMaxWidth(50);
-        endYTextField = new TextField();
+        endYTextField = new TextField("0");
         endYTextField.setMaxWidth(50);
         
         endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y"), endYTextField);
@@ -177,10 +170,8 @@ public class UI extends Application {
                 clearMapButton, 
                 setStartButton,
                 startCoordinatesHBox,
-                validStartLabel,
                 setEndButton,
-                endCoordinatesHBox,
-                validEndLabel
+                endCoordinatesHBox
         );
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
@@ -195,7 +186,13 @@ public class UI extends Application {
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
             setStartButton.setText("Set start");
-            setStartButton.setText("Set end");
+            setEndButton.setText("Set end");
+            
+            startX = Integer.parseInt(startXTextField.getText());
+            startY = Integer.parseInt(startYTextField.getText());
+            endX = Integer.parseInt(endXTextField.getText());
+            endY = Integer.parseInt(endYTextField.getText());
+            
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
                 boolean[][] path = dijkstra.findShortestPath(startX, startY, endX, endY);
                 if (path != null) {
@@ -250,10 +247,9 @@ public class UI extends Application {
                     startX = Integer.parseInt(startXTextField.getText());
                     startY = Integer.parseInt(startYTextField.getText());
                     rectMap[startY][startX].setFill(Color.RED);
-                    validStartLabel.setText("");
                 } else {
-                    System.out.println("tänne");
-                    validStartLabel.setText("Invalid starting position!");
+                    startXTextField.setText(String.valueOf(startX));
+                    startYTextField.setText(String.valueOf(startY));
                 }
             }
         });
@@ -274,9 +270,9 @@ public class UI extends Application {
                     startX = Integer.parseInt(startXTextField.getText());
                     startY = Integer.parseInt(startYTextField.getText());
                     rectMap[startY][startX].setFill(Color.RED);
-                    validEndLabel.setText("");
                 } else {
-                    validEndLabel.setText("Invalid starting position!");
+                    startXTextField.setText(String.valueOf(startX));
+                    startYTextField.setText(String.valueOf(startY));
                 }
             }
         });
@@ -297,9 +293,9 @@ public class UI extends Application {
                     endX = Integer.parseInt(endXTextField.getText());
                     endY = Integer.parseInt(endYTextField.getText());
                     rectMap[endY][endX].setFill(Color.BLUE);
-                    validEndLabel.setText("");
                 } else {
-                    validEndLabel.setText("Invalid starting position!");
+                    endXTextField.setText(String.valueOf(endX));
+                    endYTextField.setText(String.valueOf(endY));
                 }
             }
         });
@@ -320,9 +316,9 @@ public class UI extends Application {
                     endX = Integer.parseInt(endXTextField.getText());
                     endY = Integer.parseInt(endYTextField.getText());
                     rectMap[endY][endX].setFill(Color.BLUE);
-                    validStartLabel.setText("");
                 } else {
-                    validStartLabel.setText("Invalid starting position!");
+                    endXTextField.setText(String.valueOf(endX));
+                    endYTextField.setText(String.valueOf(endY));
                 }
             }
         });
@@ -378,13 +374,6 @@ public class UI extends Application {
         if (x < 0 || x > map[0].length || y < 0 || y > map.length) {
             return false;
         } else if (map[y][x] != '.') {
-            if (startOrEnd) {
-                startXTextField.setText(String.valueOf(startX));
-                startYTextField.setText(String.valueOf(startY));
-            } else {
-                endXTextField.setText(String.valueOf(endX));
-                endYTextField.setText(String.valueOf(endY));
-            }
             return false;
         }
         return true;
