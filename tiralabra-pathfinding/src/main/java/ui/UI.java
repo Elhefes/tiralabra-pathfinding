@@ -8,10 +8,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -32,6 +35,12 @@ public class UI extends Application {
     private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
+    private TextField startXTextField;
+    private TextField startYTextField;
+    private TextField endXTextField;
+    private TextField endYTextField;
+    private Label validStartLabel;
+    private Label validEndLabel;
     private Dijkstra dijkstra;
     private Logic logic;
     private MapParser mapParser;
@@ -48,7 +57,7 @@ public class UI extends Application {
         borderPane = new BorderPane();
         mapGrid = new GridPane();
         BorderPane.setAlignment(mapGrid, Pos.CENTER);
-        BorderPane.setMargin(mapGrid, new Insets(10, 10, 10, 10));
+        //BorderPane.setMargin(mapGrid, new Insets(10, 10, 10, 10));
         borderPane.setCenter(mapGrid);
         borderPane.setRight(addRightBar());
         defaultScene = new Scene(borderPane);
@@ -87,7 +96,7 @@ public class UI extends Application {
     private Rectangle addSquare() {
         Rectangle rect = new Rectangle(rectSize, rectSize);
         
-        rect.setOnMousePressed((MouseEvent e) -> {
+        rect.setOnMousePressed((MouseEvent) -> {
             int rectX = GridPane.getColumnIndex(rect);
             int rectY = GridPane.getRowIndex(rect);
             
@@ -102,13 +111,19 @@ public class UI extends Application {
                 startX = rectX;
                 startY = rectY;
                 rectMap[rectY][rectX].setFill(Color.RED);
+                startXTextField.setText(String.valueOf(rectX));
+                startYTextField.setText(String.valueOf(rectY));
+                validStartLabel.setText("");
             } else if (setEndButton.isSelected()) {
                 if (endX != -1) {
-                    rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                    rectMap[endY][endX].setFill(Color.LIGHTGRAY);
                 }
                 endX = rectX;
                 endY = rectY;
-                rectMap[rectY][rectX].setFill(Color.RED);
+                rectMap[rectY][rectX].setFill(Color.BLUE);
+                endXTextField.setText(String.valueOf(rectX));
+                endYTextField.setText(String.valueOf(rectY));
+                validEndLabel.setText("");
             }
         });
         return rect;
@@ -132,10 +147,41 @@ public class UI extends Application {
         setStartButton = new ToggleButton("Set start");
         setStartButton.setPrefSize(120, 20);
         
+        validStartLabel = new Label("Invalid starting position!");
+        validEndLabel = new Label("Invalid ending position!");
+        
+        HBox startCoordinatesHBox = new HBox();
+        startCoordinatesHBox.setSpacing(5);
+        startXTextField = new TextField();
+        startXTextField.setMaxWidth(50);
+        startYTextField = new TextField();
+        startYTextField.setMaxWidth(50);
+        
+        startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y"), startYTextField);
+        
         setEndButton = new ToggleButton("Set end");
         setEndButton.setPrefSize(120, 20);
         
-        rightBar.getChildren().addAll(changeMapButton, dijkstraButton, clearMapButton, setStartButton, setEndButton);
+        HBox endCoordinatesHBox = new HBox();
+        endCoordinatesHBox.setSpacing(5);
+        endXTextField = new TextField();
+        endXTextField.setMaxWidth(50);
+        endYTextField = new TextField();
+        endYTextField.setMaxWidth(50);
+        
+        endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y"), endYTextField);
+        
+        rightBar.getChildren().addAll(
+                changeMapButton,
+                dijkstraButton, 
+                clearMapButton, 
+                setStartButton,
+                startCoordinatesHBox,
+                validStartLabel,
+                setEndButton,
+                endCoordinatesHBox,
+                validEndLabel
+        );
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
             File mapFile = logic.chooseFile();
@@ -148,6 +194,8 @@ public class UI extends Application {
         dijkstraButton.setOnMouseClicked((MouseEvent) -> {
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
+            setStartButton.setText("Set start");
+            setStartButton.setText("Set end");
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
                 boolean[][] path = dijkstra.findShortestPath(startX, startY, endX, endY);
                 if (path != null) {
@@ -161,15 +209,122 @@ public class UI extends Application {
         clearMapButton.setOnMouseClicked((MouseEvent) -> {
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
+            setStartButton.setText("Set start");
+            setEndButton.setText("Set end");
             resetMap();            
         });
         
         setStartButton.setOnMouseClicked((MouseEvent) -> {
+            if (setStartButton.isSelected()) {
+                setStartButton.setText("Click on map!");
+            } else {
+                setStartButton.setText("Set start");
+            }
+            setEndButton.setText("Set end");
             setEndButton.setSelected(false);            
         });
         
         setEndButton.setOnMouseClicked((MouseEvent) -> {
+            if (setEndButton.isSelected()) {
+                setEndButton.setText("Click on map!");
+            } else {
+                setEndButton.setText("Set end");
+            }
+            setStartButton.setText("Set start");
             setStartButton.setSelected(false);            
+        });
+        
+        startXTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String newValue = startXTextField.getText().replaceAll("[^\\d]", "");
+                startXTextField.setText(newValue);
+                
+                if (newValue.equals("")) {
+                    return;
+                }
+                
+                if (textFieldsHaveValidCoordinates(true)) {
+                    if (startX != -1) {
+                        rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                    }
+                    startX = Integer.parseInt(startXTextField.getText());
+                    startY = Integer.parseInt(startYTextField.getText());
+                    rectMap[startY][startX].setFill(Color.RED);
+                    validStartLabel.setText("");
+                } else {
+                    System.out.println("tänne");
+                    validStartLabel.setText("Invalid starting position!");
+                }
+            }
+        });
+        
+        startYTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String newValue = startYTextField.getText().replaceAll("[^\\d]", "");
+                startYTextField.setText(newValue);
+                
+                if (newValue.equals("")) {
+                    return;
+                }
+                
+                if (textFieldsHaveValidCoordinates(true)) {
+                    if (startX != -1) {
+                        rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                    }
+                    startX = Integer.parseInt(startXTextField.getText());
+                    startY = Integer.parseInt(startYTextField.getText());
+                    rectMap[startY][startX].setFill(Color.RED);
+                    validEndLabel.setText("");
+                } else {
+                    validEndLabel.setText("Invalid starting position!");
+                }
+            }
+        });
+        
+        endXTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String newValue = endXTextField.getText().replaceAll("[^\\d]", "");
+                endXTextField.setText(newValue);
+                
+                if (newValue.equals("")) {
+                    return;
+                }
+                
+                if (textFieldsHaveValidCoordinates(false)) {
+                    if (endX != -1) {
+                        rectMap[endY][endX].setFill(Color.LIGHTGRAY);
+                    }
+                    endX = Integer.parseInt(endXTextField.getText());
+                    endY = Integer.parseInt(endYTextField.getText());
+                    rectMap[endY][endX].setFill(Color.BLUE);
+                    validEndLabel.setText("");
+                } else {
+                    validEndLabel.setText("Invalid starting position!");
+                }
+            }
+        });
+        
+        endYTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String newValue = endYTextField.getText().replaceAll("[^\\d]", "");
+                endYTextField.setText(newValue);
+                
+                if (newValue.equals("")) {
+                    return;
+                }
+                
+                if (textFieldsHaveValidCoordinates(false)) {
+                    if (endX != -1) {
+                        rectMap[endY][endX].setFill(Color.LIGHTGRAY);
+                    }
+                    endX = Integer.parseInt(endXTextField.getText());
+                    endY = Integer.parseInt(endYTextField.getText());
+                    rectMap[endY][endX].setFill(Color.BLUE);
+                    validStartLabel.setText("");
+                } else {
+                    validStartLabel.setText("Invalid starting position!");
+                }
+            }
         });
 
         return rightBar;
@@ -204,6 +359,35 @@ public class UI extends Application {
         }
         
         dijkstra = new Dijkstra(map);
+        
+        startXTextField.setText("");
+        startYTextField.setText("");
+        endXTextField.setText("");
+        endYTextField.setText("");
+    }
+    
+    private boolean textFieldsHaveValidCoordinates(boolean startOrEnd) {
+        String xText = startOrEnd ? startXTextField.getText() : endXTextField.getText();
+        String yText = startOrEnd ? startYTextField.getText() : endYTextField.getText();
+        if (xText.equals("") || yText.equals("")) {
+            return false;
+        }
+        int x = Integer.parseInt(xText);
+        int y = Integer.parseInt(yText);
+        
+        if (x < 0 || x > map[0].length || y < 0 || y > map.length) {
+            return false;
+        } else if (map[y][x] != '.') {
+            if (startOrEnd) {
+                startXTextField.setText(String.valueOf(startX));
+                startYTextField.setText(String.valueOf(startY));
+            } else {
+                endXTextField.setText(String.valueOf(endX));
+                endYTextField.setText(String.valueOf(endY));
+            }
+            return false;
+        }
+        return true;
     }
 
 }
