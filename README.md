@@ -26,9 +26,6 @@ The project uses Gradle for easy running, testing and building. You should run g
 ### Generate checkstyle report
 ```
 ./gradlew check
-```
-or 
-```
 ./gradlew checkstyleMain
 ```
 The checkstyle report will be generated to *tiralabra-pathfinding/build/reports/checkstyle/main.html*
@@ -48,3 +45,9 @@ You can generate jacoco test coverage report with
 ./gradlew jacocoTestReport
 ```
 The report will be generated to *tiralabra-pathfinding/build/reports/jacoco/test/html/index.html*
+
+### Build project
+```
+./gradlew build
+```
+The build of the program will be created to *tiralabra-pathfinding/build/distributions*
