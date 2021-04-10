@@ -1,3 +1,11 @@
+## [Week 3](#week-3)
+This week I got the Dijkstra's algorithm working properly. I also improved the UI and added a file chooser to choose different maps. Then I initiated some unit test files but I didn't have the time to write the actual tests yet. This week I got jacoco and checkstyle working properly with Gradle after some problems.
+
+Next week's goal is to implement IDA* search algorithm. I will also start creating tests for the application.
+
+Time used: 8 hours.
+
+
 ## [Week 2](#week-2)
 I started implementing the actual program. I started with building a simple file parser for the map files. After that I started the user interface to display the maps on, so it would be easy to see if the algorithms would work right from the start. I also coded the basic functionality for Dijkstra and it's visualisation. However I couldn't finish it quite yet, so that is something that I will do next. I also managed to add checkstyle to the project after lots of error troubleshooting with gradle. I also added some javadoc comments to the classes.
 
