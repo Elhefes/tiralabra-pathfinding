@@ -7,15 +7,17 @@ import datastructures.Vertex;
  *
  * @author henripal
  */
-public class Dijkstra {
+public class AStar {
     private char[][] map;
     private boolean visited[][];
     private double distance[][];
     private boolean path[][];
     private PriorityQueue<Vertex> heap;
+    private int endX;
+    private int endY;
     private int processed = 0;
     
-    public Dijkstra(char[][] map) {
+    public AStar(char[][] map) {
         this.map = map;
         int mapLength = map.length;
         int mapWidth = map[0].length;
@@ -32,7 +34,7 @@ public class Dijkstra {
     
     /**
      * Finds the shortest path from start point to the
-     * end point with Dijkstra's algorithm.
+     * end point with A* search algorithm.
      * 
      * @param startX starting node's x coordinate.
      * @param startY starting node's y coordinate.
@@ -40,10 +42,12 @@ public class Dijkstra {
      * @param endY ending node's y coordinate.
      * @return the shortest path as an boolean array.
      */
-    
     public boolean[][] findShortestPath(int startX, int startY, int endX, int endY) {
+        processed++;
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
+        this.endX = endX;
+        this.endY = endY;
         
         Vertex firstVertex = new Vertex(startX, startY, 0, null);
         heap.add(firstVertex);
@@ -73,8 +77,7 @@ public class Dijkstra {
     /**
      * The method goes through every neighbour of the vertex
      * and checks if they are available to be processed. If
-     * they are it adds them to the heap so that Dijkstra
-     * can process them.
+     * they are it adds them to the heap so that A* can process them.
      * 
      * @param vertex the vertex which neighbours need to be processed.
      */
@@ -101,12 +104,26 @@ public class Dijkstra {
                     double newDistance = currentDistance + distanceToNextVertex;
                     if (newDistance < distance[y][x]) {
                         distance[y][x] = newDistance;
-                        Vertex newVertex = new Vertex(x, y, newDistance, vertex);
+                        
+                        double distanceToEnd = distanceToTheEnd(vertex);
+                        Vertex newVertex = new Vertex(x, y, newDistance + distanceToEnd, vertex);
                         heap.add(newVertex);
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * The heuristic function which calculates the
+     * distance from the current vertex to the end vertex.
+     * 
+     * @param vertex the current vertex that's being processed.
+     * @return the distance from the vertex to the end vertex.
+     */
+    private double distanceToTheEnd(Vertex vertex) {
+        double distanceToEnd = Math.sqrt(Math.pow(endX - vertex.getX(), 2) + Math.pow(endY - vertex.getY(), 2));
+        return distanceToEnd;
     }
     
     /**
@@ -121,7 +138,7 @@ public class Dijkstra {
     }
     
     /**
-     * Generates the final path which Dijkstra found.
+     * Generates the final path which A* found.
      * 
      * @param vertex the last vertex of the path.
      */

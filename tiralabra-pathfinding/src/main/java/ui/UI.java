@@ -1,5 +1,6 @@
 package ui;
 
+import algorithms.AStar;
 import parser.MapParser;
 import algorithms.Dijkstra;
 import java.io.File;
@@ -32,6 +33,7 @@ public class UI extends Application {
     private Rectangle[][] rectMap;
     private Button changeMapButton;
     private Button dijkstraButton;
+    private Button aStarButton;
     private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
@@ -40,6 +42,7 @@ public class UI extends Application {
     private TextField endXTextField;
     private TextField endYTextField;
     private Dijkstra dijkstra;
+    private AStar aStar;
     private Logic logic;
     private MapParser mapParser;
     private char[][] map;
@@ -83,6 +86,7 @@ public class UI extends Application {
         }
         
         dijkstra = new Dijkstra(map);
+        aStar = new AStar(map);
         
         mainStage.setMinWidth(mapLength + 400);
         mainStage.setMinHeight(mapHeight);
@@ -137,6 +141,9 @@ public class UI extends Application {
         dijkstraButton = new Button("Dijkstra");
         dijkstraButton.setPrefSize(120, 20);
         
+        aStarButton = new Button("A*");
+        aStarButton.setPrefSize(120, 20);
+        
         clearMapButton = new Button("Clear map");
         clearMapButton.setPrefSize(120, 20);
         
@@ -167,6 +174,7 @@ public class UI extends Application {
         rightBar.getChildren().addAll(
                 changeMapButton,
                 dijkstraButton, 
+                aStarButton,
                 clearMapButton, 
                 setStartButton,
                 startCoordinatesHBox,
@@ -195,6 +203,27 @@ public class UI extends Application {
             
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
                 boolean[][] path = dijkstra.findShortestPath(startX, startY, endX, endY);
+                if (path != null) {
+                    drawMap(path);
+                }
+            } else {
+                System.out.println("Before running the pathfinder you must provide the start and end points!");
+            }
+        });
+        
+        aStarButton.setOnMouseClicked((MouseEvent) -> {
+            setStartButton.setSelected(false);
+            setEndButton.setSelected(false);
+            setStartButton.setText("Set start");
+            setEndButton.setText("Set end");
+            
+            startX = Integer.parseInt(startXTextField.getText());
+            startY = Integer.parseInt(startYTextField.getText());
+            endX = Integer.parseInt(endXTextField.getText());
+            endY = Integer.parseInt(endYTextField.getText());
+            
+            if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
+                boolean[][] path = aStar.findShortestPath(startX, startY, endX, endY);
                 if (path != null) {
                     drawMap(path);
                 }
@@ -355,6 +384,7 @@ public class UI extends Application {
         }
         
         dijkstra = new Dijkstra(map);
+        aStar = new AStar(map);
         
         startXTextField.setText("");
         startYTextField.setText("");
