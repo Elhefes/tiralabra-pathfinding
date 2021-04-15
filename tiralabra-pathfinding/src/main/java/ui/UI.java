@@ -149,7 +149,9 @@ public class UI extends Application {
         changeMapButton.setPrefSize(120, 20);
         
         dijkstraCheckBox = new CheckBox("Dijkstra");
+        dijkstraCheckBox.setStyle("-fx-text-fill: #008000;");
         aStarCheckBox = new CheckBox("A* Search");
+        aStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
 
         runButton = new Button("Run");
         runButton.setPrefSize(120, 20);
@@ -167,7 +169,7 @@ public class UI extends Application {
         startYTextField = new TextField("0");
         startYTextField.setMaxWidth(50);
         
-        startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y"), startYTextField);
+        startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y:"), startYTextField);
         
         setEndButton = new ToggleButton("Set end");
         setEndButton.setPrefSize(120, 20);
@@ -179,7 +181,7 @@ public class UI extends Application {
         endYTextField = new TextField("0");
         endYTextField.setMaxWidth(50);
         
-        endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y"), endYTextField);
+        endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y:"), endYTextField);
         
         pathLengthLabel = new Label();
         nodesProcessedLabel= new Label();
