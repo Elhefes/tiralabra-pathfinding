@@ -15,6 +15,8 @@ public class Dijkstra {
     private boolean path[][];
     private PriorityQueue<Vertex> heap;
     private int processedNodes = 0;
+    private long startTime;
+    private long timeSpent;
     
     public Dijkstra(char[][] map) {
         this.map = map;
@@ -43,6 +45,7 @@ public class Dijkstra {
      */
     
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
+        startTime = System.nanoTime();
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         
@@ -59,7 +62,8 @@ public class Dijkstra {
             }
             
             if (latestVertex.getX() == endX && latestVertex.getY() == endY) {
-                Result result = new Result(latestVertex, distance[endY][endX], processedNodes, 0);
+                timeSpent = (System.nanoTime() - startTime) / 1000000;
+                Result result = new Result(latestVertex, distance[endY][endX], processedNodes, timeSpent);
                 return result;
             }
             

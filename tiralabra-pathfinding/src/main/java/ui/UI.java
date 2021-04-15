@@ -43,6 +43,9 @@ public class UI extends Application {
     private TextField startYTextField;
     private TextField endXTextField;
     private TextField endYTextField;
+    private Label pathLengthLabel;
+    private Label nodesProcessedLabel;
+    private Label timeSpentLabel;
     private Dijkstra dijkstra;
     private AStar aStar;
     private Logic logic;
@@ -173,6 +176,10 @@ public class UI extends Application {
         
         endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y"), endYTextField);
         
+        pathLengthLabel = new Label();
+        nodesProcessedLabel= new Label();
+        timeSpentLabel = new Label();
+        
         rightBar.getChildren().addAll(
                 changeMapButton,
                 dijkstraButton, 
@@ -181,7 +188,10 @@ public class UI extends Application {
                 setStartButton,
                 startCoordinatesHBox,
                 setEndButton,
-                endCoordinatesHBox
+                endCoordinatesHBox,
+                pathLengthLabel,
+                nodesProcessedLabel,
+                timeSpentLabel
         );
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
@@ -207,6 +217,7 @@ public class UI extends Application {
                 Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
                 if (searchResult.pathWasFound()) {
                     drawPath(searchResult.getLastVertex());
+                    updateLabels(searchResult);
                 } else {
                     System.out.println("No path found!");
                 }
@@ -230,6 +241,7 @@ public class UI extends Application {
                 Result searchResult = aStar.findShortestPath(startX, startY, endX, endY);
                 if (searchResult.pathWasFound()) {
                     drawPath(searchResult.getLastVertex());
+                    updateLabels(searchResult);
                 } else {
                     System.out.println("No path found!");
                 }
@@ -395,6 +407,12 @@ public class UI extends Application {
         startYTextField.setText("");
         endXTextField.setText("");
         endYTextField.setText("");
+    }
+    
+    private void updateLabels(Result result) {
+        pathLengthLabel.setText("Shortest path length:\n" + result.getPathLength());
+        nodesProcessedLabel.setText("Nodes processed:\n" + result.getProcessedNodes());
+        timeSpentLabel.setText("Time spent:\n" + result.getTimeSpent() + " ms");
     }
     
     private boolean textFieldsHaveValidCoordinates(boolean startOrEnd) {

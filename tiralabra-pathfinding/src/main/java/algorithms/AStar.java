@@ -17,6 +17,8 @@ public class AStar {
     private int endX;
     private int endY;
     private int processedNodes = 0;
+    private long startTime;
+    private long timeSpent;
     
     public AStar(char[][] map) {
         this.map = map;
@@ -41,9 +43,10 @@ public class AStar {
      * @param startY starting node's y coordinate.
      * @param endX ending node's x coordinate.
      * @param endY ending node's y coordinate.
-     * @return the shortest path as an boolean array.
+     * @return the search result as an Result object.
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
+        startTime = System.nanoTime();
         processedNodes++;
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
@@ -63,7 +66,8 @@ public class AStar {
             }
             
             if (latestVertex.getX() == endX && latestVertex.getY() == endY) {
-                Result result = new Result(latestVertex, distance[endY][endX], processedNodes, 0);
+                timeSpent = (System.nanoTime() - startTime) / 1000000;
+                Result result = new Result(latestVertex, distance[endY][endX], processedNodes, timeSpent);
                 return result;
             }
             
