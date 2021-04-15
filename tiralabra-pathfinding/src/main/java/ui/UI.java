@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -34,8 +35,10 @@ public class UI extends Application {
     private GridPane mapGrid;
     private Rectangle[][] rectMap;
     private Button changeMapButton;
-    private Button dijkstraButton;
+    private Button runButton;
     private Button aStarButton;
+    private CheckBox dijkstraCheckBox;
+    private CheckBox aStarCheckBox;
     private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
@@ -45,7 +48,9 @@ public class UI extends Application {
     private TextField endYTextField;
     private Label pathLengthLabel;
     private Label nodesProcessedLabel;
+    private String nodesProcessedString;
     private Label timeSpentLabel;
+    private String timeSpentString;
     private Dijkstra dijkstra;
     private AStar aStar;
     private Logic logic;
@@ -136,18 +141,18 @@ public class UI extends Application {
     
     public VBox addRightBar() {
         VBox rightBar = new VBox();
-        rightBar.setPadding(new Insets(15, 12, 15, 12));
+        rightBar.setPadding(new Insets(20, 20, 20, 20));
         rightBar.setSpacing(10);
-        rightBar.setStyle("-fx-background-color: #336699;");
+        //rightBar.setStyle("-fx-background-color: #336699;");
         
         changeMapButton = new Button("Change map");
         changeMapButton.setPrefSize(120, 20);
-
-        dijkstraButton = new Button("Dijkstra");
-        dijkstraButton.setPrefSize(120, 20);
         
-        aStarButton = new Button("A*");
-        aStarButton.setPrefSize(120, 20);
+        dijkstraCheckBox = new CheckBox("Dijkstra");
+        aStarCheckBox = new CheckBox("A* Search");
+
+        runButton = new Button("Run");
+        runButton.setPrefSize(120, 20);
         
         clearMapButton = new Button("Clear map");
         clearMapButton.setPrefSize(120, 20);
@@ -182,8 +187,9 @@ public class UI extends Application {
         
         rightBar.getChildren().addAll(
                 changeMapButton,
-                dijkstraButton, 
-                aStarButton,
+                dijkstraCheckBox,
+                aStarCheckBox,
+                runButton,
                 clearMapButton, 
                 setStartButton,
                 startCoordinatesHBox,
@@ -198,15 +204,19 @@ public class UI extends Application {
             File mapFile = logic.chooseFile();
             if (mapFile != null) {
                 map = mapParser.parseMap(mapFile);
-                resetMap();
+                initiateMap();
             }
         });
         
-        dijkstraButton.setOnMouseClicked((MouseEvent) -> {
+        runButton.setOnMouseClicked((MouseEvent) -> {
+            timeSpentString = "Time spent: ";
+            nodesProcessedString = "Nodes processed:";
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
             setStartButton.setText("Set start");
             setEndButton.setText("Set end");
+            
+            resetMap();
             
             startX = Integer.parseInt(startXTextField.getText());
             startY = Integer.parseInt(startYTextField.getText());
@@ -214,36 +224,28 @@ public class UI extends Application {
             endY = Integer.parseInt(endYTextField.getText());
             
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
-                Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
-                if (searchResult.pathWasFound()) {
-                    drawPath(searchResult.getLastVertex());
-                    updateLabels(searchResult);
-                } else {
-                    System.out.println("No path found!");
+                if (dijkstraCheckBox.isSelected()) {
+                    Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
+                    if (searchResult.pathWasFound()) {
+                        drawPath(searchResult.getLastVertex(), Color.GREEN);
+                        timeSpentString += "\n-Dijkstra: "+ searchResult.getTimeSpent() + " ms";
+                        nodesProcessedString += "\n-Dijkstra: " + searchResult.getProcessedNodes();
+                        updateLabels(searchResult);
+                    } else {
+                        System.out.println("No path found!");
+                    }
                 }
-            } else {
-                System.out.println("Before running the pathfinder you must provide the start and end points!");
-            }
-        });
-        
-        aStarButton.setOnMouseClicked((MouseEvent) -> {
-            setStartButton.setSelected(false);
-            setEndButton.setSelected(false);
-            setStartButton.setText("Set start");
-            setEndButton.setText("Set end");
-            
-            startX = Integer.parseInt(startXTextField.getText());
-            startY = Integer.parseInt(startYTextField.getText());
-            endX = Integer.parseInt(endXTextField.getText());
-            endY = Integer.parseInt(endYTextField.getText());
-            
-            if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
-                Result searchResult = aStar.findShortestPath(startX, startY, endX, endY);
-                if (searchResult.pathWasFound()) {
-                    drawPath(searchResult.getLastVertex());
-                    updateLabels(searchResult);
-                } else {
-                    System.out.println("No path found!");
+
+                if (aStarCheckBox.isSelected()) {
+                    Result searchResult = aStar.findShortestPath(startX, startY, endX, endY);
+                    if (searchResult.pathWasFound()) {
+                        drawPath(searchResult.getLastVertex(), Color.BLUE);
+                        timeSpentString += "\n-A* Search: " + searchResult.getTimeSpent() + " ms";
+                        nodesProcessedString += "\n-A* Search: " + searchResult.getProcessedNodes();
+                        updateLabels(searchResult);
+                    } else {
+                        System.out.println("No path found!");
+                    }
                 }
             } else {
                 System.out.println("Before running the pathfinder you must provide the start and end points!");
@@ -255,7 +257,7 @@ public class UI extends Application {
             setEndButton.setSelected(false);
             setStartButton.setText("Set start");
             setEndButton.setText("Set end");
-            resetMap();            
+            initiateMap();            
         });
         
         setStartButton.setOnMouseClicked((MouseEvent) -> {
@@ -373,9 +375,9 @@ public class UI extends Application {
         return rightBar;
     }
     
-    private void drawPath(Vertex lastVertex) {
+    private void drawPath(Vertex lastVertex, Color color) {
         while (true) {
-            rectMap[lastVertex.getY()][lastVertex.getX()].setFill(Color.GREEN);
+            rectMap[lastVertex.getY()][lastVertex.getX()].setFill(color);
             lastVertex = lastVertex.getPreviousVertex();
             if (lastVertex == null) {
                 break;
@@ -383,12 +385,23 @@ public class UI extends Application {
         }
     }
     
-    private void resetMap() {
+    private void initiateMap() {
         startX = -1;
         startY = -1;
         endX = -1;
         endY = -1;
             
+        resetMap();        
+        startXTextField.setText("");
+        startYTextField.setText("");
+        endXTextField.setText("");
+        endYTextField.setText("");
+        pathLengthLabel.setText("");
+        nodesProcessedLabel.setText("");
+        timeSpentLabel.setText("");
+    }
+    
+    private void resetMap() {
         for (int x = 0; x < map[0].length; x++) {
             for (int y = 0; y < map.length; y++) {
                 Rectangle rect = rectMap[y][x];
@@ -402,17 +415,12 @@ public class UI extends Application {
         
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
-        
-        startXTextField.setText("");
-        startYTextField.setText("");
-        endXTextField.setText("");
-        endYTextField.setText("");
     }
     
     private void updateLabels(Result result) {
         pathLengthLabel.setText("Shortest path length:\n" + result.getPathLength());
-        nodesProcessedLabel.setText("Nodes processed:\n" + result.getProcessedNodes());
-        timeSpentLabel.setText("Time spent:\n" + result.getTimeSpent() + " ms");
+        nodesProcessedLabel.setText(nodesProcessedString);
+        timeSpentLabel.setText(timeSpentString);
     }
     
     private boolean textFieldsHaveValidCoordinates(boolean startOrEnd) {
