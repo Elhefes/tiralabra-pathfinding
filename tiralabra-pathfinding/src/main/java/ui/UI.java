@@ -148,6 +148,8 @@ public class UI extends Application {
         changeMapButton = new Button("Change map");
         changeMapButton.setPrefSize(120, 20);
         
+        Label coordinatesLabel = new Label("Set start and end\ncoordinates:");
+        Label algorithmLabel = new Label("Pick algorithms:");
         dijkstraCheckBox = new CheckBox("Dijkstra");
         dijkstraCheckBox.setStyle("-fx-text-fill: #008000;");
         aStarCheckBox = new CheckBox("A* Search");
@@ -189,14 +191,16 @@ public class UI extends Application {
         
         rightBar.getChildren().addAll(
                 changeMapButton,
-                dijkstraCheckBox,
-                aStarCheckBox,
-                runButton,
-                clearMapButton, 
+                coordinatesLabel,
                 setStartButton,
                 startCoordinatesHBox,
                 setEndButton,
                 endCoordinatesHBox,
+                algorithmLabel,
+                dijkstraCheckBox,
+                aStarCheckBox,
+                runButton,
+                clearMapButton,
                 pathLengthLabel,
                 nodesProcessedLabel,
                 timeSpentLabel
