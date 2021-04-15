@@ -1,5 +1,6 @@
 package algorithms;
 
+import datastructures.Result;
 import java.util.PriorityQueue;
 import datastructures.Vertex;
 
@@ -13,7 +14,7 @@ public class Dijkstra {
     private double distance[][];
     private boolean path[][];
     private PriorityQueue<Vertex> heap;
-    private int processed = 0;
+    private int processedNodes = 0;
     
     public Dijkstra(char[][] map) {
         this.map = map;
@@ -38,10 +39,10 @@ public class Dijkstra {
      * @param startY starting node's y coordinate.
      * @param endX ending node's x coordinate.
      * @param endY ending node's y coordinate.
-     * @return the shortest path as an boolean array.
+     * @return the search result as an Result object.
      */
     
-    public boolean[][] findShortestPath(int startX, int startY, int endX, int endY) {
+    public Result findShortestPath(int startX, int startY, int endX, int endY) {
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         
@@ -49,25 +50,23 @@ public class Dijkstra {
         heap.add(firstVertex);
         
         while (!heap.isEmpty()) {
-            Vertex vertex = heap.poll();
-            int x = vertex.getX();
-            int y = vertex.getY();
+            Vertex latestVertex = heap.poll();
+            int x = latestVertex.getX();
+            int y = latestVertex.getY();
             
             if (visited[y][x]) {
                 continue;
             }
             
-            if (vertex.getX() == endX && vertex.getY() == endY) {
-                generateFinalPath(vertex);
-                System.out.println("Shortest distance: " + distance[endY][endX]);
-                System.out.println("Processed nodes: " + processed);
-                return path;
+            if (latestVertex.getX() == endX && latestVertex.getY() == endY) {
+                Result result = new Result(latestVertex, distance[endY][endX], processedNodes, 0);
+                return result;
             }
             
             visited[y][x] = true;
-            processNeighbours(vertex);
+            processNeighbours(latestVertex);
         }
-        return path;
+        return new Result();
     }
     
     /**
@@ -79,7 +78,7 @@ public class Dijkstra {
      * @param vertex the vertex which neighbours need to be processed.
      */
     private void processNeighbours(Vertex vertex) {
-        processed++;
+        processedNodes++;
         int startX = vertex.getX();
         int startY = vertex.getY();
         
@@ -118,21 +117,6 @@ public class Dijkstra {
      */
     private boolean isWithinMapLimits(int x, int y) {
         return (x > 0 && x < map[0].length && y > 0 && y < map.length);
-    }
-    
-    /**
-     * Generates the final path which Dijkstra found.
-     * 
-     * @param vertex the last vertex of the path.
-     */
-    private void generateFinalPath(Vertex vertex) {
-        while (true) {
-            path[vertex.getY()][vertex.getX()] = true;
-            vertex = vertex.getPreviousVertex();
-            if (vertex == null) {
-                break;
-            }
-        }
     }
     
 }

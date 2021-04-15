@@ -3,6 +3,8 @@ package ui;
 import algorithms.AStar;
 import parser.MapParser;
 import algorithms.Dijkstra;
+import datastructures.Result;
+import datastructures.Vertex;
 import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -202,9 +204,11 @@ public class UI extends Application {
             endY = Integer.parseInt(endYTextField.getText());
             
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
-                boolean[][] path = dijkstra.findShortestPath(startX, startY, endX, endY);
-                if (path != null) {
-                    drawMap(path);
+                Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
+                if (searchResult.pathWasFound()) {
+                    drawPath(searchResult.getLastVertex());
+                } else {
+                    System.out.println("No path found!");
                 }
             } else {
                 System.out.println("Before running the pathfinder you must provide the start and end points!");
@@ -223,9 +227,11 @@ public class UI extends Application {
             endY = Integer.parseInt(endYTextField.getText());
             
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
-                boolean[][] path = aStar.findShortestPath(startX, startY, endX, endY);
-                if (path != null) {
-                    drawMap(path);
+                Result searchResult = aStar.findShortestPath(startX, startY, endX, endY);
+                if (searchResult.pathWasFound()) {
+                    drawPath(searchResult.getLastVertex());
+                } else {
+                    System.out.println("No path found!");
                 }
             } else {
                 System.out.println("Before running the pathfinder you must provide the start and end points!");
@@ -355,13 +361,12 @@ public class UI extends Application {
         return rightBar;
     }
     
-    private void drawMap(boolean[][] path) {
-        for (int x = 0; x < path[0].length; x++) {
-            for (int y = 0; y < path.length; y++) {
-                Rectangle rect = rectMap[y][x];
-                if (path[y][x] == true) {
-                    rect.setFill(Color.GREEN);
-                }
+    private void drawPath(Vertex lastVertex) {
+        while (true) {
+            rectMap[lastVertex.getY()][lastVertex.getX()].setFill(Color.GREEN);
+            lastVertex = lastVertex.getPreviousVertex();
+            if (lastVertex == null) {
+                break;
             }
         }
     }
