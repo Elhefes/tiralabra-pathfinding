@@ -3,6 +3,7 @@ package ui;
 import algorithms.AStar;
 import parser.MapParser;
 import algorithms.Dijkstra;
+import algorithms.IDAStar;
 import datastructures.Result;
 import datastructures.Vertex;
 import java.io.File;
@@ -29,16 +30,16 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int rectSize = 2;        
+    private final int rectSize = 1;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane mapGrid;
     private Rectangle[][] rectMap;
     private Button changeMapButton;
     private Button runButton;
-    private Button aStarButton;
     private CheckBox dijkstraCheckBox;
     private CheckBox aStarCheckBox;
+    private CheckBox IDAStarCheckBox;
     private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
@@ -53,6 +54,7 @@ public class UI extends Application {
     private String timeSpentString;
     private Dijkstra dijkstra;
     private AStar aStar;
+    private IDAStar idAStar;
     private Logic logic;
     private MapParser mapParser;
     private char[][] map;
@@ -97,6 +99,7 @@ public class UI extends Application {
         
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
+        idAStar = new IDAStar(map, rectMap);
         
         mainStage.setMinWidth(mapLength + 400);
         mainStage.setMinHeight(mapHeight);
@@ -143,17 +146,18 @@ public class UI extends Application {
         VBox rightBar = new VBox();
         rightBar.setPadding(new Insets(20, 20, 20, 20));
         rightBar.setSpacing(10);
-        //rightBar.setStyle("-fx-background-color: #336699;");
         
         changeMapButton = new Button("Change map");
         changeMapButton.setPrefSize(120, 20);
         
         Label coordinatesLabel = new Label("Set start and end\ncoordinates:");
-        Label algorithmLabel = new Label("Pick algorithms:");
+        Label algorithmLabel = new Label("Pick algorithm(s):");
         dijkstraCheckBox = new CheckBox("Dijkstra");
         dijkstraCheckBox.setStyle("-fx-text-fill: #008000;");
         aStarCheckBox = new CheckBox("A* Search");
         aStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
+        IDAStarCheckBox = new CheckBox("Iterative Deepening A*");
+        IDAStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
 
         runButton = new Button("Run");
         runButton.setPrefSize(120, 20);
@@ -199,6 +203,7 @@ public class UI extends Application {
                 algorithmLabel,
                 dijkstraCheckBox,
                 aStarCheckBox,
+                IDAStarCheckBox,
                 runButton,
                 clearMapButton,
                 pathLengthLabel,
@@ -215,7 +220,7 @@ public class UI extends Application {
         });
         
         runButton.setOnMouseClicked((MouseEvent) -> {
-            timeSpentString = "Time spent: ";
+            timeSpentString = "Time spent:";
             nodesProcessedString = "Nodes processed:";
             setStartButton.setSelected(false);
             setEndButton.setSelected(false);
@@ -248,6 +253,18 @@ public class UI extends Application {
                         drawPath(searchResult.getLastVertex(), Color.BLUE);
                         timeSpentString += "\n-A* Search: " + searchResult.getTimeSpent() + " ms";
                         nodesProcessedString += "\n-A* Search: " + searchResult.getProcessedNodes();
+                        updateLabels(searchResult);
+                    } else {
+                        System.out.println("No path found!");
+                    }
+                }
+                
+                if (IDAStarCheckBox.isSelected()) {
+                    Result searchResult = idAStar.findShortestPath(startX, startY, endX, endY);
+                    if (searchResult.pathWasFound()) {
+                        drawPath(searchResult.getLastVertex(), Color.RED);
+                        timeSpentString += "\n-IDA*: "+ searchResult.getTimeSpent() + " ms";
+                        nodesProcessedString += "\n-IDA*: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
                         System.out.println("No path found!");
@@ -421,6 +438,7 @@ public class UI extends Application {
         
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
+        idAStar = new IDAStar(map, rectMap);
     }
     
     private void updateLabels(Result result) {
