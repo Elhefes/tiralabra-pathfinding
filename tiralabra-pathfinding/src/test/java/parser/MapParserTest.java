@@ -1,43 +1,57 @@
 package parser;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import java.io.File;
+import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author henripal
  */
 public class MapParserTest {
+    static MapParser mapParser;
+    static File file1;
+    static File file2;
+    static File file3;
     
-    public MapParserTest() {
+    @BeforeClass 
+    public static void setUp() {
+        mapParser = new MapParser();
+        file1 = new File("./maps/Paris_1_512.map");
+        file2 = new File("./maps/London_1_512.map");
+        file3 = new File("invalid");
     }
     
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
     @Test
-    public void hello() {}
+    public void parsingMap1Works() {
+        try {
+            char[][] map = mapParser.parseMap(file1);
+            assertTrue(map[0][0] == '.');
+            assertTrue(map[100][50] == '@');
+        } catch (Exception e) {
+            assert false;
+        }
+    }
     
-//    @Test
-//    public void hello2() {}
+    @Test
+    public void parsingMap2Works() {
+        try {
+            char[][] map = mapParser.parseMap(file2);
+            assertTrue(map[100][300] == '.');
+            assertTrue(map[300][300] == '@');
+        } catch (Exception e) {
+            assert false;
+        }
+    }
+    
+    @Test
+    public void parsingInvalidMapDoesntWork() {
+        try {
+            char[][] map = mapParser.parseMap(file3);
+            assertTrue(map == null);
+        } catch (Exception e) {
+            assert false;
+        }
+    }
 }
