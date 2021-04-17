@@ -12,7 +12,6 @@ public class Dijkstra {
     private char[][] map;
     private boolean visited[][];
     private double distance[][];
-    private boolean path[][];
     private PriorityQueue<Vertex> heap;
     private int processedNodes = 0;
     private long startTime;
@@ -23,7 +22,6 @@ public class Dijkstra {
         int mapLength = map.length;
         int mapWidth = map[0].length;
         this.visited = new boolean[mapLength][mapWidth];
-        this.path = new boolean[mapLength][mapWidth];
         this.distance = new double[mapLength][mapWidth];
         
         for (int x = 0; x < mapWidth; x++) {
@@ -43,7 +41,6 @@ public class Dijkstra {
      * @param endY ending node's y coordinate.
      * @return the search result as an Result object.
      */
-    
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
         startTime = System.nanoTime();
         distance[startY][startX] = 0;

@@ -12,7 +12,6 @@ public class AStar {
     private char[][] map;
     private boolean visited[][];
     private double distance[][];
-    private boolean path[][];
     private PriorityQueue<Vertex> heap;
     private int endX;
     private int endY;
@@ -25,7 +24,6 @@ public class AStar {
         int mapLength = map.length;
         int mapWidth = map[0].length;
         this.visited = new boolean[mapLength][mapWidth];
-        this.path = new boolean[mapLength][mapWidth];
         this.distance = new double[mapLength][mapWidth];
         
         for (int x = 0; x < mapWidth; x++) {
