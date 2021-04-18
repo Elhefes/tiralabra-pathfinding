@@ -51,6 +51,7 @@ public class Dijkstra {
         
         while (!heap.isEmpty()) {
             Vertex latestVertex = heap.poll();
+            processedNodes++;
             int x = latestVertex.getX();
             int y = latestVertex.getY();
             
@@ -79,7 +80,6 @@ public class Dijkstra {
      * @param vertex the vertex which neighbours need to be processed.
      */
     private void processNeighbours(Vertex vertex) {
-        processedNodes++;
         int startX = vertex.getX();
         int startY = vertex.getY();
         

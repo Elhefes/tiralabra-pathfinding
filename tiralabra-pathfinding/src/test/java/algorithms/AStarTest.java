@@ -12,8 +12,8 @@ import parser.MapParser;
  *
  * @author henripal
  */
-public class DijkstraTest {
-    private Dijkstra dijkstra;
+public class AStarTest {
+    private AStar aStar;
     private MapParser mapParser;
     private File mapFile;
     private char[][] map;
@@ -28,39 +28,39 @@ public class DijkstraTest {
     @Before
     public void before() {
         map = mapParser.parseMap(mapFile);
-        dijkstra = new Dijkstra(map);
+        aStar = new AStar(map);
     }
     
     @Test
     public void testParisPath1() {
-        Result result = dijkstra.findShortestPath(0, 0, 500, 500);
+        Result result = aStar.findShortestPath(0, 0, 500, 500);
         assertEquals(757.4844148224649, result.getPathLength(), 0.00001);
-        assertEquals(198761, result.getProcessedNodes());
+        assertEquals(125711, result.getProcessedNodes());
     }
     
     @Test
     public void testParisPath2() {
-        Result result = dijkstra.findShortestPath(473, 7, 161, 504);
+        Result result = aStar.findShortestPath(473, 7, 161, 504);
         assertEquals(764.7859300126298, result.getPathLength(), 0.00001);
-        assertEquals(196340, result.getProcessedNodes());
+        assertEquals(213434, result.getProcessedNodes());
     }
     
     @Test
     public void testParisPath3() {
-        Result result = dijkstra.findShortestPath(0, 0, 50, 50);
+        Result result = aStar.findShortestPath(0, 0, 50, 50);
         assertEquals(70.7106781186547, result.getPathLength(), 0.00001);
-        assertEquals(3539, result.getProcessedNodes());
+        assertEquals(149, result.getProcessedNodes());
     }
     
     @Test
     public void testNonExistingPath() {
-        Result result = dijkstra.findShortestPath(108, 493, 0, 0);
+        Result result = aStar.findShortestPath(108, 493, 0, 0);
         assertFalse(result.pathWasFound());
     }
     
     @Test
     public void sameStartAndEndPointsReturnCorrectResult() {
-        Result result = dijkstra.findShortestPath(10, 10, 10, 10);
+        Result result = aStar.findShortestPath(10, 10, 10, 10);
         assertEquals(0.0, result.getPathLength(), 0.0);
         assertEquals(1, result.getProcessedNodes());
     }

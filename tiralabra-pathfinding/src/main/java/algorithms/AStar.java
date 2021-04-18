@@ -45,7 +45,6 @@ public class AStar {
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
         startTime = System.nanoTime();
-        processedNodes++;
         distance[startY][startX] = 0;
         heap = new PriorityQueue<>();
         this.endX = endX;
@@ -56,6 +55,7 @@ public class AStar {
         
         while (!heap.isEmpty()) {
             Vertex latestVertex = heap.poll();
+            processedNodes++;
             int x = latestVertex.getX();
             int y = latestVertex.getY();
             
@@ -83,7 +83,6 @@ public class AStar {
      * @param vertex the vertex which neighbours need to be processed.
      */
     private void processNeighbours(Vertex vertex) {
-        processedNodes++;
         int startX = vertex.getX();
         int startY = vertex.getY();
         
