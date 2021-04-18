@@ -1,9 +1,9 @@
 ## [Week 4](#week-4)
-This week I began implementing IDA* search algorithm. However I didn't quite get it to work yet. I also made the UI better, now you can run multiple algorithms at once and see how they compare in terms of performance. It displays the time used by each algorithm.
+This week I began implementing IDA* search algorithm. However I didn't quite get it to work yet. I also made the UI better, now you can run multiple algorithms at once and see how they compare in terms of performance. It displays the time used by each algorithm. There is also now an option to choosee different sized maps, although the larger 1024x1024 sized maps render so slow (presumably because of JavaFX's performance) that they shouldn't really be used. Finally I started to add unit tests to the project, for the working algorithms and the parser. I didn't test IDA* yet because it is not working properly. This week I also started to write some documentation for the testing and implementation.
 
 Next week's goal is to fix the broken IDA* and add more tests and replace some of the data structures I have used (PriorityQueue, Stack)
 
-Time used: 10 hours.
+Time used: 13 hours.
 
 ## [Week 3](#week-3)
 This week I got the Dijkstra's algorithm working properly. I added A* search algorithm as well to the project so that the two algorithms can now be compared easily. I also improved the UI and added a file chooser to choose different maps. Then I initiated some unit test files but I didn't have the time to write the actual tests yet. This week I got jacoco and checkstyle working properly with Gradle after some problems.
