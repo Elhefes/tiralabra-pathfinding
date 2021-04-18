@@ -62,15 +62,16 @@ public class UI extends Application {
     private int startY = -1;
     private int endX = -1;
     private int endY = -1;
+    private Stage mainStage;
     
     @Override
     public void start(Stage mainStage) throws Exception {        
         mainStage.setTitle("Pathfinding visualizer");
+        this.mainStage = mainStage;
 
         borderPane = new BorderPane();
         mapGrid = new GridPane();
         BorderPane.setAlignment(mapGrid, Pos.CENTER);
-        //BorderPane.setMargin(mapGrid, new Insets(10, 10, 10, 10));
         borderPane.setCenter(mapGrid);
         borderPane.setRight(addRightBar());
         defaultScene = new Scene(borderPane);
@@ -82,8 +83,7 @@ public class UI extends Application {
         int mapHeight = map.length;
         int mapLength = map[0].length;
         
-        rectMap = new Rectangle[mapHeight][mapLength];        
-        
+        rectMap = new Rectangle[mapHeight][mapLength];
         for (int x = 0; x < mapHeight; x++) {
             for (int y = 0; y < mapLength; y++) {
                 Rectangle rect = addSquare();
@@ -101,9 +101,8 @@ public class UI extends Application {
         aStar = new AStar(map);
         idAStar = new IDAStar(map, rectMap);
         
-        mainStage.setMinWidth(mapLength + 400);
-        mainStage.setMinHeight(mapHeight);
-
+        mainStage.setMinWidth(mapLength);
+        mainStage.setMinHeight(mapHeight + 100);
         mainStage.setScene(defaultScene);
         mainStage.show();
     }
@@ -203,7 +202,7 @@ public class UI extends Application {
                 algorithmLabel,
                 dijkstraCheckBox,
                 aStarCheckBox,
-                IDAStarCheckBox,
+                //IDAStarCheckBox,
                 runButton,
                 clearMapButton,
                 pathLengthLabel,
@@ -215,7 +214,9 @@ public class UI extends Application {
             File mapFile = logic.chooseFile();
             if (mapFile != null) {
                 map = mapParser.parseMap(mapFile);
-                initiateMap();
+                if (map != null) {
+                    initiateMap();
+                }
             }
         });
         
@@ -425,13 +426,41 @@ public class UI extends Application {
     }
     
     private void resetMap() {
-        for (int x = 0; x < map[0].length; x++) {
-            for (int y = 0; y < map.length; y++) {
-                Rectangle rect = rectMap[y][x];
-                if (map[y][x] == '.') {
-                    rect.setFill(Color.LIGHTGRAY);
-                } else {
-                    rect.setFill(Color.BLACK);
+        if (map.length != rectMap.length) {
+            borderPane.getChildren().clear();
+            mapGrid.getChildren().clear();
+            
+            System.out.println(map.length);
+            int mapHeight = map.length;
+            int mapLength = map[0].length;
+
+            rectMap = new Rectangle[mapHeight][mapLength];        
+
+            for (int x = 0; x < mapHeight; x++) {
+                for (int y = 0; y < mapLength; y++) {
+                    Rectangle rect = addSquare();
+                    if (map[y][x] == '.') {
+                        rect.setFill(Color.LIGHTGRAY);
+                    } else {
+                        rect.setFill(Color.BLACK);
+                    }
+                    mapGrid.add(rect, x, y);
+                    rectMap[y][x] = rect;
+                }
+            }
+            System.out.println("setting");
+            borderPane.setCenter(mapGrid);
+            borderPane.setRight(addRightBar());
+            System.out.println("set!");
+        } else {
+            for (int x = 0; x < map[0].length; x++) {
+                for (int y = 0; y < map.length; y++) {
+                    Rectangle rect = rectMap[y][x];
+                    if (map[y][x] == '.') {
+                        rect.setFill(Color.LIGHTGRAY);
+                    } else {
+                        rect.setFill(Color.BLACK);
+                    }
                 }
             }
         }
