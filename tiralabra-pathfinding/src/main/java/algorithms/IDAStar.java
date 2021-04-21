@@ -23,7 +23,7 @@ public class IDAStar {
     private Vertex resultVertex;
     private Rectangle[][] rectMap;
     
-    public IDAStar(char[][] map, Rectangle[][] rectMap) {
+    public IDAStar(char[][] map) {
         this.map = map;
         this.inPath = new boolean[map.length][map[0].length];
         this.rectMap = rectMap;

@@ -9,8 +9,9 @@ import datastructures.Vertex;
 import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -22,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -30,11 +30,9 @@ import javafx.stage.Stage;
  * @author henripal
  */
 public class UI extends Application {
-    private final int rectSize = 1;        
     private BorderPane borderPane;
     private Scene defaultScene;
     private GridPane mapGrid;
-    private Rectangle[][] rectMap;
     private Button changeMapButton;
     private Button runButton;
     private CheckBox dijkstraCheckBox;
@@ -63,82 +61,61 @@ public class UI extends Application {
     private int endX = -1;
     private int endY = -1;
     private Stage mainStage;
+    private Canvas canvas;
+    private GraphicsContext graphicsContext;
     
     @Override
     public void start(Stage mainStage) throws Exception {        
         mainStage.setTitle("Pathfinding visualizer");
         this.mainStage = mainStage;
-
-        borderPane = new BorderPane();
-        mapGrid = new GridPane();
-        BorderPane.setAlignment(mapGrid, Pos.CENTER);
-        borderPane.setCenter(mapGrid);
-        borderPane.setRight(addRightBar());
-        defaultScene = new Scene(borderPane);
         
         logic = new Logic();
         mapParser = new MapParser();
         map = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
+
+        borderPane = new BorderPane();
+        mapGrid = new GridPane();;
+        borderPane.setCenter(canvas);
+        VBox rightBar = addRightBar();
+        borderPane.setRight(rightBar);
+        defaultScene = new Scene(borderPane);        
         
-        int mapHeight = map.length;
-        int mapLength = map[0].length;
+        resetMap();
+        initiateAlgorithms();
         
-        rectMap = new Rectangle[mapHeight][mapLength];
-        for (int x = 0; x < mapHeight; x++) {
-            for (int y = 0; y < mapLength; y++) {
-                Rectangle rect = addSquare();
-                if (map[y][x] == '.') {
-                    rect.setFill(Color.LIGHTGRAY);
-                } else {
-                    rect.setFill(Color.BLACK);
-                }
-                mapGrid.add(rect, x, y);
-                rectMap[y][x] = rect;
-            }
-        }
-        
-        dijkstra = new Dijkstra(map);
-        aStar = new AStar(map);
-        idAStar = new IDAStar(map, rectMap);
-        
-        mainStage.setMinWidth(mapLength);
-        mainStage.setMinHeight(mapHeight + 100);
         mainStage.setScene(defaultScene);
         mainStage.show();
     }
     
-    private Rectangle addSquare() {
-        Rectangle rect = new Rectangle(rectSize, rectSize);
-        
-        rect.setOnMousePressed((MouseEvent) -> {
-            int rectX = GridPane.getColumnIndex(rect);
-            int rectY = GridPane.getRowIndex(rect);
+    private void initiateMapClickListener() {
+        this.canvas.setOnMouseClicked(value -> {
+            int x = (int) value.getX();
+            int y = (int) value.getY();
             
-            if (map[rectY][rectX] != '.') {
+            if (map[y][x] != '.') {
                 return;
             }
             
             if (setStartButton.isSelected()) {
                 if (startX != -1) {
-                    rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                    fillRect(startX, startY, Color.LIGHTGRAY);
                 }
-                startX = rectX;
-                startY = rectY;
-                rectMap[rectY][rectX].setFill(Color.RED);
-                startXTextField.setText(String.valueOf(rectX));
-                startYTextField.setText(String.valueOf(rectY));
+                startX = x;
+                startY = y;
+                fillRect(x, y, Color.BLUE);
+                startXTextField.setText(String.valueOf(x));
+                startYTextField.setText(String.valueOf(y));
             } else if (setEndButton.isSelected()) {
                 if (endX != -1) {
-                    rectMap[endY][endX].setFill(Color.LIGHTGRAY);
+                    fillRect(startX, startY, Color.LIGHTGRAY);
                 }
-                endX = rectX;
-                endY = rectY;
-                rectMap[rectY][rectX].setFill(Color.BLUE);
-                endXTextField.setText(String.valueOf(rectX));
-                endYTextField.setText(String.valueOf(rectY));
+                endX = x;
+                endY = y;
+                fillRect(x, y, Color.RED);
+                endXTextField.setText(String.valueOf(x));
+                endYTextField.setText(String.valueOf(y));
             }
         });
-        return rect;
     }
     
     public VBox addRightBar() {
@@ -156,7 +133,7 @@ public class UI extends Application {
         aStarCheckBox = new CheckBox("A* Search");
         aStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
         IDAStarCheckBox = new CheckBox("Iterative Deepening A*");
-        IDAStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
+        IDAStarCheckBox.setStyle("-fx-text-fill: #FF0000;");
 
         runButton = new Button("Run");
         runButton.setPrefSize(120, 20);
@@ -229,6 +206,7 @@ public class UI extends Application {
             setEndButton.setText("Set end");
             
             resetMap();
+            initiateAlgorithms();
             
             startX = Integer.parseInt(startXTextField.getText());
             startY = Integer.parseInt(startYTextField.getText());
@@ -315,11 +293,11 @@ public class UI extends Application {
                 
                 if (textFieldsHaveValidCoordinates(true)) {
                     if (startX != -1) {
-                        rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                        fillRect(startX, startY, Color.LIGHTGRAY);
                     }
                     startX = Integer.parseInt(startXTextField.getText());
                     startY = Integer.parseInt(startYTextField.getText());
-                    rectMap[startY][startX].setFill(Color.RED);
+                    fillRect(startX, startY, Color.RED);
                 } else {
                     startXTextField.setText(String.valueOf(startX));
                     startYTextField.setText(String.valueOf(startY));
@@ -338,11 +316,11 @@ public class UI extends Application {
                 
                 if (textFieldsHaveValidCoordinates(true)) {
                     if (startX != -1) {
-                        rectMap[startY][startX].setFill(Color.LIGHTGRAY);
+                        fillRect(startX, startY, Color.LIGHTGRAY);
                     }
                     startX = Integer.parseInt(startXTextField.getText());
                     startY = Integer.parseInt(startYTextField.getText());
-                    rectMap[startY][startX].setFill(Color.RED);
+                    fillRect(startX, startY, Color.RED);
                 } else {
                     startXTextField.setText(String.valueOf(startX));
                     startYTextField.setText(String.valueOf(startY));
@@ -361,11 +339,11 @@ public class UI extends Application {
                 
                 if (textFieldsHaveValidCoordinates(false)) {
                     if (endX != -1) {
-                        rectMap[endY][endX].setFill(Color.LIGHTGRAY);
+                        fillRect(startX, startY, Color.LIGHTGRAY);
                     }
                     endX = Integer.parseInt(endXTextField.getText());
                     endY = Integer.parseInt(endYTextField.getText());
-                    rectMap[endY][endX].setFill(Color.BLUE);
+                    fillRect(startX, startY, Color.BLUE);
                 } else {
                     endXTextField.setText(String.valueOf(endX));
                     endYTextField.setText(String.valueOf(endY));
@@ -384,11 +362,11 @@ public class UI extends Application {
                 
                 if (textFieldsHaveValidCoordinates(false)) {
                     if (endX != -1) {
-                        rectMap[endY][endX].setFill(Color.LIGHTGRAY);
+                        fillRect(startX, startY, Color.LIGHTGRAY);
                     }
                     endX = Integer.parseInt(endXTextField.getText());
                     endY = Integer.parseInt(endYTextField.getText());
-                    rectMap[endY][endX].setFill(Color.BLUE);
+                    fillRect(startX, startY, Color.BLUE);
                 } else {
                     endXTextField.setText(String.valueOf(endX));
                     endYTextField.setText(String.valueOf(endY));
@@ -399,9 +377,14 @@ public class UI extends Application {
         return rightBar;
     }
     
+    private void fillRect(int x, int y, Color color) {
+        graphicsContext.setFill(color);
+        graphicsContext.fillRect(x, y, 1, 1);
+    }
+    
     private void drawPath(Vertex lastVertex, Color color) {
         while (true) {
-            rectMap[lastVertex.getY()][lastVertex.getX()].setFill(color);
+            fillRect(lastVertex.getX(), lastVertex.getY(), color);
             lastVertex = lastVertex.getPreviousVertex();
             if (lastVertex == null) {
                 break;
@@ -426,48 +409,31 @@ public class UI extends Application {
     }
     
     private void resetMap() {
-        if (map.length != rectMap.length) {
-            borderPane.getChildren().clear();
-            mapGrid.getChildren().clear();
-            
-            System.out.println(map.length);
-            int mapHeight = map.length;
-            int mapLength = map[0].length;
+        int mapHeight = map.length;
+        int mapLength = map[0].length;
+        canvas = new Canvas(mapHeight, mapLength);
+        graphicsContext = canvas.getGraphicsContext2D();
+        borderPane.setCenter(canvas);
 
-            rectMap = new Rectangle[mapHeight][mapLength];        
-
-            for (int x = 0; x < mapHeight; x++) {
-                for (int y = 0; y < mapLength; y++) {
-                    Rectangle rect = addSquare();
-                    if (map[y][x] == '.') {
-                        rect.setFill(Color.LIGHTGRAY);
-                    } else {
-                        rect.setFill(Color.BLACK);
-                    }
-                    mapGrid.add(rect, x, y);
-                    rectMap[y][x] = rect;
-                }
-            }
-            System.out.println("setting");
-            borderPane.setCenter(mapGrid);
-            borderPane.setRight(addRightBar());
-            System.out.println("set!");
-        } else {
-            for (int x = 0; x < map[0].length; x++) {
-                for (int y = 0; y < map.length; y++) {
-                    Rectangle rect = rectMap[y][x];
-                    if (map[y][x] == '.') {
-                        rect.setFill(Color.LIGHTGRAY);
-                    } else {
-                        rect.setFill(Color.BLACK);
-                    }
+        for (int x = 0; x < mapHeight; x++) {
+            for (int y = 0; y < mapLength; y++) {
+                if (map[y][x] == '.') {
+                    fillRect(x, y, Color.LIGHTGREY);
+                } else {
+                    fillRect(x, y, Color.BLACK);
                 }
             }
         }
-        
+        initiateMapClickListener();
+        mainStage.setWidth(map.length + 200);
+        mainStage.setHeight(700);
+        mainStage.setMinHeight(map.length);
+    }
+    
+    private void initiateAlgorithms() {
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
-        idAStar = new IDAStar(map, rectMap);
+        idAStar = new IDAStar(map);
     }
     
     private void updateLabels(Result result) {

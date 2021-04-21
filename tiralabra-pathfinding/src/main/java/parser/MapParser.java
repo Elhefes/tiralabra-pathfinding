@@ -2,7 +2,6 @@ package parser;
 
 import java.io.File;
 import java.util.Scanner;
-import ui.Logic;
 
 /**
  *
@@ -22,13 +21,6 @@ public class MapParser {
             int height = Integer.parseInt(scanner.nextLine().substring(7));
             int width = Integer.parseInt(scanner.nextLine().substring(6));
             scanner.nextLine();
-            
-            Logic logic = new Logic();
-            if (height > 512) {
-                if (!logic.askForMapChoosingConfirmation(height, width)) {
-                    return null;
-                }
-            }
 
             char[][] mapArray = new char[height][width];
 

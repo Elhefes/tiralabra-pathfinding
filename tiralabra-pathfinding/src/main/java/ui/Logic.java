@@ -24,22 +24,5 @@ public class Logic {
         }
         return null;
     }
-    
-    public boolean askForMapChoosingConfirmation(int height, int width) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.setTitle("Warning");
-        alert.setHeaderText("Map size large");
-        alert.setContentText(
-                "The map you are trying to open is very large (" + height + "*" + width + "). "
-                + "The opening of this map might take a long time (several minutes depending on the "
-                + "speed of your computer) due to JavaFX's performance. Are you sure you want to open this map?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            return true;
-        }
-        return false;
-    }
 
 }
