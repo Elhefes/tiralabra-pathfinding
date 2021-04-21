@@ -1,7 +1,7 @@
 package algorithms;
 
+import datastructures.PriorityHeap;
 import datastructures.Result;
-import java.util.PriorityQueue;
 import datastructures.Vertex;
 
 /**
@@ -12,7 +12,7 @@ public class AStar {
     private char[][] map;
     private boolean visited[][];
     private double distance[][];
-    private PriorityQueue<Vertex> heap;
+    private PriorityHeap heap;
     private int endX;
     private int endY;
     private int processedNodes = 0;
@@ -46,7 +46,7 @@ public class AStar {
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
         startTime = System.nanoTime();
         distance[startY][startX] = 0;
-        heap = new PriorityQueue<>();
+        heap = new PriorityHeap();
         this.endX = endX;
         this.endY = endY;
         

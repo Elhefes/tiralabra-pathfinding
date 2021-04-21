@@ -35,14 +35,14 @@ public class AStarTest {
     public void testParisPath1() {
         Result result = aStar.findShortestPath(0, 0, 500, 500);
         assertEquals(757.4844148224649, result.getPathLength(), 0.00001);
-        assertEquals(125711, result.getProcessedNodes());
+        assertEquals(125706, result.getProcessedNodes());
     }
     
     @Test
     public void testParisPath2() {
         Result result = aStar.findShortestPath(473, 7, 161, 504);
         assertEquals(764.7859300126298, result.getPathLength(), 0.00001);
-        assertEquals(213434, result.getProcessedNodes());
+        assertEquals(213534, result.getProcessedNodes());
     }
     
     @Test

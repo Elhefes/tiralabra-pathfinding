@@ -1,5 +1,6 @@
 package algorithms;
 
+import datastructures.PriorityHeap;
 import datastructures.Result;
 import java.util.PriorityQueue;
 import datastructures.Vertex;
@@ -12,7 +13,7 @@ public class Dijkstra {
     private char[][] map;
     private boolean visited[][];
     private double distance[][];
-    private PriorityQueue<Vertex> heap;
+    private PriorityHeap heap;
     private int processedNodes = 0;
     private long startTime;
     private long timeSpent;
@@ -44,7 +45,7 @@ public class Dijkstra {
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
         startTime = System.nanoTime();
         distance[startY][startX] = 0;
-        heap = new PriorityQueue<>();
+        heap = new PriorityHeap();
         
         Vertex firstVertex = new Vertex(startX, startY, 0, null);
         heap.add(firstVertex);

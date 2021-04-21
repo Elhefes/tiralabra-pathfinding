@@ -16,6 +16,13 @@ public class Vertex implements Comparable<Vertex> {
         this.distance = distance;
         this.previousVertex = previousVertex;
     }
+    
+    public Vertex(int x, int y, double distance) {
+        this.x = x;
+        this.y = y;
+        this.distance = distance;
+        this.previousVertex = null;
+    }
 
     public int getX() {
         return x;
