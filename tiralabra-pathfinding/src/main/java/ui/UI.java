@@ -37,7 +37,7 @@ public class UI extends Application {
     private Button runButton;
     private CheckBox dijkstraCheckBox;
     private CheckBox aStarCheckBox;
-    private CheckBox IDAStarCheckBox;
+    private CheckBox idAStarCheckBox;
     private Button clearMapButton;
     private ToggleButton setStartButton;
     private ToggleButton setEndButton;
@@ -52,7 +52,7 @@ public class UI extends Application {
     private String timeSpentString;
     private Dijkstra dijkstra;
     private AStar aStar;
-    private IDAStar idAStar;
+    private IDAStar idaStar;
     private Logic logic;
     private MapParser mapParser;
     private char[][] map;
@@ -132,8 +132,9 @@ public class UI extends Application {
         dijkstraCheckBox.setStyle("-fx-text-fill: #008000;");
         aStarCheckBox = new CheckBox("A* Search");
         aStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
-        IDAStarCheckBox = new CheckBox("Iterative Deepening A*");
-        IDAStarCheckBox.setStyle("-fx-text-fill: #FF0000;");
+        //idAStarCheckBox = new CheckBox("Iterative Deepening A*");
+        idAStarCheckBox = new CheckBox("IDA* (Unfinished, slow)");
+        idAStarCheckBox.setStyle("-fx-text-fill: #FF0000;");
 
         runButton = new Button("Run");
         runButton.setPrefSize(120, 20);
@@ -166,7 +167,7 @@ public class UI extends Application {
         endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y:"), endYTextField);
         
         pathLengthLabel = new Label();
-        nodesProcessedLabel= new Label();
+        nodesProcessedLabel = new Label();
         timeSpentLabel = new Label();
         
         rightBar.getChildren().addAll(
@@ -179,7 +180,7 @@ public class UI extends Application {
                 algorithmLabel,
                 dijkstraCheckBox,
                 aStarCheckBox,
-                //IDAStarCheckBox,
+                idAStarCheckBox,
                 runButton,
                 clearMapButton,
                 pathLengthLabel,
@@ -218,7 +219,7 @@ public class UI extends Application {
                     Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
                     if (searchResult.pathWasFound()) {
                         drawPath(searchResult.getLastVertex(), Color.GREEN);
-                        timeSpentString += "\n-Dijkstra: "+ searchResult.getTimeSpent() + " ms";
+                        timeSpentString += "\n-Dijkstra: " + searchResult.getTimeSpent() + " ms";
                         nodesProcessedString += "\n-Dijkstra: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
@@ -238,8 +239,8 @@ public class UI extends Application {
                     }
                 }
                 
-                if (IDAStarCheckBox.isSelected()) {
-                    Result searchResult = idAStar.findShortestPath(startX, startY, endX, endY);
+                if (idAStarCheckBox.isSelected()) {
+                    Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, 5);
                     if (searchResult.pathWasFound()) {
                         drawPath(searchResult.getLastVertex(), Color.RED);
                         timeSpentString += "\n-IDA*: "+ searchResult.getTimeSpent() + " ms";
@@ -433,7 +434,7 @@ public class UI extends Application {
     private void initiateAlgorithms() {
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
-        idAStar = new IDAStar(map);
+        idaStar = new IDAStar(map);
     }
     
     private void updateLabels(Result result) {
