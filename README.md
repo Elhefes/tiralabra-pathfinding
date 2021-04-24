@@ -11,6 +11,7 @@ This repository contains a project made for a course in University of Helsinki, 
 * [Manual](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/user_manual.md)
 
 ## Weekly progress reports
+* [Week 5](documentation/week_report.md#week-5)
 * [Week 4](documentation/week_report.md#week-4)
 * [Week 3](documentation/week_report.md#week-3)
 * [Week 2](documentation/week_report.md#week-2)
