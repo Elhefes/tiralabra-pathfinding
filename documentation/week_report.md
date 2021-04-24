@@ -1,3 +1,10 @@
+## [Week 5](#week-5)
+This week I used a lot of time in debugging the broken IDA* algorithm, but couldn't find out why it doesn't work properly. It sometimes finds the optimal shortest path, but only when it is very short (< 100) nodes. Otherwise it takes way too long time to solve. I think the problem is that it visits too many nodes for some reason. I have no idea why. This is something I would like some comment from from the course's instructor or someone. This week I also I implemented my own PriorityQueue datastructure and the tests for it. I also made the UI use Canvas instead of bunch of Rectangles, that made the ui much more efficient in terms of performance.
+
+Next week I plan of course trying to fix the IDA* and code my own ArrayList data structure and also add more documentation.
+
+Time used: 14 hours.
+
 ## [Week 4](#week-4)
 This week I began implementing IDA* search algorithm. However I didn't quite get it to work yet. I also made the UI better, now you can run multiple algorithms at once and see how they compare in terms of performance. It displays the time used by each algorithm. There is also now an option to choose different sized maps, although the larger 1024x1024 sized maps render so slow (presumably because of JavaFX's performance) that they shouldn't really be used. Finally I started to add unit tests to the project, for the working algorithms and the parser. I didn't test IDA* yet because it is not working properly. This week I also started to write some documentation for the testing and implementation.
 
