@@ -1,7 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'application'
-apply plugin: 'checkstyle'
+plugins {
+	id 'application'
+	id 'jacoco'
+	id 'java'
+	id 'org.openjfx.javafxplugin' version '0.0.9'
+	id 'checkstyle'
+}
 
 checkstyle {
     toolVersion '8.36.1'
@@ -43,4 +46,9 @@ repositories {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
+}
+
+javafx {
+    version = "15.0.1"
+    modules = [ 'javafx.controls' ]
 }
