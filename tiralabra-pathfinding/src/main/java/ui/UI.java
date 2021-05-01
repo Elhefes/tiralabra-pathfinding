@@ -385,9 +385,11 @@ public class UI extends Application {
     
     private void drawPath(Vertex lastVertex, Color color) {
         System.out.println("alkaa \n");
+        int i = 1;
         while (true) {
             fillRect(lastVertex.getX(), lastVertex.getY(), color);
-            System.out.println("distance: " + lastVertex.getDistance());
+            System.out.println("i:" + i + ", distance: " + lastVertex.getDistance());
+            i++;
             lastVertex = lastVertex.getPreviousVertex();
             if (lastVertex == null) {
                 break;

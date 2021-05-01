@@ -14,6 +14,7 @@ public class IDAStar {
     private long timeout;
     private int visitedNodes;
     private double bound;
+    private Vertex startVertex;
     private Vertex endVertex;  
     private Vertex lastVertex;
     
@@ -40,8 +41,10 @@ public class IDAStar {
         
         endVertex = new Vertex(endX, endY, 0);
         PriorityHeap path = new PriorityHeap();
-        path.add(new Vertex(startX, startY, 0));
-        bound = heuristic(startX, startY, endX, endY);
+        Vertex root = new Vertex(startX, startY, 0);
+        root.setDistance(h(root));
+        path.add(root);
+        bound = h(root);
         
         while (true) {
             if (System.nanoTime() - startTime > this.timeout) {
@@ -49,8 +52,9 @@ public class IDAStar {
                 return new Result();
             }
             double t = search(path, 0, bound);
-            if (pathFound) {
+            if (pathFound || t == -1) {
                 long timeSpent = (System.nanoTime() - startTime) / 1000000;
+                System.out.println("COUNTTI ON " + countLength(lastVertex));
                 return new Result(lastVertex, lastVertex.getDistance(), visitedNodes, timeSpent);
             }
             if (t == Double.MAX_VALUE) {
@@ -70,11 +74,14 @@ public class IDAStar {
     private double search(PriorityHeap path, double g, double bound) {
         visitedNodes++;
         Vertex node = path.peek();
-        double f = g + heuristic(node.getX(), node.getY(), endVertex.getX(), endVertex.getY());
+        double f = g + h(node);
         if (f > bound) return f;
         if (node.getX() == endVertex.getX() && node.getY() == endVertex.getY()) {
             pathFound = true;
+            System.out.println("\ng: " + g);
             lastVertex = node;
+            lastVertex.setDistance(h(node));
+            System.out.println("XDDDDD" +lastVertex.getDistance());
             return -1;
         }
             
@@ -84,15 +91,29 @@ public class IDAStar {
             Vertex succ = neighbours.poll();
             if (!path.contains(succ)) {
                 path.add(succ);
-                double cost = g + heuristic(node.getX(), node.getY(), succ.getX(), succ.getY());
-                succ.setDistance(cost + heuristic(succ.getX(), succ.getY(), endVertex.getX(), endVertex.getY()));
-                double t = search(path, cost, bound);
+//                double cost = g + cost(node, succ);
+//                succ.setDistance(cost + cost(succ, endVertex));
+//                double t = search(path, cost, bound);
+                double t = search(path, g + cost(node, succ), bound);
                 if (pathFound) return -1;
                 if (t < min) min = t;
                 path.poll();
             }
         }
         return min;
+    }
+    
+    private double countLength(Vertex lastVertex) {
+        double length = 0;
+        while (true) {
+            Vertex nextVertex = lastVertex.getPreviousVertex();
+            if (nextVertex == null) {
+                break;
+            }
+            length += cost(lastVertex, nextVertex);
+            lastVertex = nextVertex;
+        }
+        return length;
     }
     
     /**
@@ -112,7 +133,7 @@ public class IDAStar {
                 }
                 if (isWithinMapLimits(x, y) && map[x][y] == '.') {
                     Vertex newVertex = new Vertex(x, y, 0, vertex);
-                    newVertex.setDistance(g + heuristic(newVertex.getX(), newVertex.getY(), endVertex.getX(), endVertex.getY()));
+                    newVertex.setDistance(g + h(newVertex));
                     heap.add(newVertex);
                 }
             }
@@ -130,8 +151,12 @@ public class IDAStar {
      * @param endY the ending vertices Y coordinate.
      * @return the distance from the vertex to the end vertex.
      */
-    public double heuristic(int startX, int startY, int endX, int endY) {
-        return Math.sqrt((endY - startY) * (endY - startY) + (endX - startX) * (endX - startX));
+    public double h(Vertex vertex) {
+        return cost(vertex, endVertex);
+    }
+    
+    public double cost(Vertex startVertex, Vertex endVertex) {
+        return Math.sqrt(Math.pow(endVertex.getX() - startVertex.getX(), 2) + Math.pow(endVertex.getY() - startVertex.getY(), 2));
     }
     
     /**

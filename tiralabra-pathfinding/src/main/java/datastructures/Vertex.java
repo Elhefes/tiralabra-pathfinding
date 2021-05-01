@@ -43,7 +43,6 @@ public class Vertex implements Comparable<Vertex> {
     public double getDistance() {
         return distance;
     }
-
     public void setDistance(double distance) {
         this.distance = distance;
     }
@@ -56,11 +55,14 @@ public class Vertex implements Comparable<Vertex> {
         this.previousVertex = previousVertex;
     }
     
+    @Override
     public int compareTo(Vertex vertex) {
         if (this.distance > vertex.getDistance()) {
             return 1;
+        } else if (this.distance < vertex.getDistance()) {
+            return -1;
         }
-        return -1;
+        return 0;
     }
 
 }
