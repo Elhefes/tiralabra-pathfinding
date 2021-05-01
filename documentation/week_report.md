@@ -1,6 +1,8 @@
 ## [Week 6](#week-6)
 This week I didn't have much time for the project. The time used went to fixing some javafx dependency problems and trying to debug the IDA*. I still have no idea why it is so inefficient.
 
+Next week I have to get the algorithm fixed and start to write some documentation for the project.
+
 Time used: 6 hours.
 
 ## [Week 5](#week-5)
