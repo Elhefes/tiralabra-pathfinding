@@ -3,7 +3,6 @@ package algorithms;
 import datastructures.PriorityHeap;
 import datastructures.Result;
 import datastructures.Vertex;
-import java.util.ArrayList;
 
 /**
  *
@@ -11,7 +10,6 @@ import java.util.ArrayList;
  */
 public class IDAStar {
     private final char[][] map;
-    private PriorityHeap path;
     private boolean pathFound;
     private long timeout;
     private int visitedNodes;
@@ -41,7 +39,7 @@ public class IDAStar {
         this.timeout = 1000000000 * timeoutSeconds;
         
         endVertex = new Vertex(endX, endY, 0);
-        path = new PriorityHeap();
+        PriorityHeap path = new PriorityHeap();
         path.add(new Vertex(startX, startY, 0));
         bound = heuristic(startX, startY, endX, endY);
         
@@ -50,7 +48,7 @@ public class IDAStar {
                 System.out.println("Timed out!");
                 return new Result();
             }
-            double t = search(0, bound);
+            double t = search(path, 0, bound);
             if (pathFound) {
                 long timeSpent = (System.nanoTime() - startTime) / 1000000;
                 return new Result(lastVertex, lastVertex.getDistance(), visitedNodes, timeSpent);
@@ -69,7 +67,7 @@ public class IDAStar {
      * @param bound the threshold of the function
      * @return double the result of the search
      */
-    private double search(double g, double bound) {
+    private double search(PriorityHeap path, double g, double bound) {
         visitedNodes++;
         Vertex node = path.peek();
         double f = g + heuristic(node.getX(), node.getY(), endVertex.getX(), endVertex.getY());
@@ -88,7 +86,7 @@ public class IDAStar {
                 path.add(succ);
                 double cost = g + heuristic(node.getX(), node.getY(), succ.getX(), succ.getY());
                 succ.setDistance(cost + heuristic(succ.getX(), succ.getY(), endVertex.getX(), endVertex.getY()));
-                double t = search(cost, bound);
+                double t = search(path, cost, bound);
                 if (pathFound) return -1;
                 if (t < min) min = t;
                 path.poll();
