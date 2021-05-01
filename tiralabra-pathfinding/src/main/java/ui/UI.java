@@ -223,7 +223,7 @@ public class UI extends Application {
                         nodesProcessedString += "\n-Dijkstra: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
-                        System.out.println("No path found!");
+                        System.out.println("No path found with Dijkstra!");
                     }
                 }
 
@@ -235,19 +235,19 @@ public class UI extends Application {
                         nodesProcessedString += "\n-A* Search: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
-                        System.out.println("No path found!");
+                        System.out.println("No path found with A*!");
                     }
                 }
                 
                 if (idAStarCheckBox.isSelected()) {
-                    Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, 5);
+                    Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, 50);
                     if (searchResult.pathWasFound()) {
                         drawPath(searchResult.getLastVertex(), Color.RED);
                         timeSpentString += "\n-IDA*: "+ searchResult.getTimeSpent() + " ms";
                         nodesProcessedString += "\n-IDA*: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
-                        System.out.println("No path found!");
+                        System.out.println("No path found with IDA*!");
                     }
                 }
             } else {
@@ -384,8 +384,10 @@ public class UI extends Application {
     }
     
     private void drawPath(Vertex lastVertex, Color color) {
+        System.out.println("alkaa \n");
         while (true) {
             fillRect(lastVertex.getX(), lastVertex.getY(), color);
+            System.out.println("distance: " + lastVertex.getDistance());
             lastVertex = lastVertex.getPreviousVertex();
             if (lastVertex == null) {
                 break;

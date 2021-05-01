@@ -11,7 +11,8 @@ import java.util.ArrayList;
  */
 public class IDAStar {
     private final char[][] map;
-    private final boolean [][] inPath;
+    private PriorityHeap path;
+    private boolean pathFound;
     private long timeout;
     private int visitedNodes;
     private double bound;
@@ -20,7 +21,6 @@ public class IDAStar {
     
     public IDAStar(char map[][]) {
         this.map = map;
-        inPath = new boolean[map.length][map[0].length];
     }
     
     /**
@@ -36,13 +36,13 @@ public class IDAStar {
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY, long timeoutSeconds) {
         visitedNodes = 0;
+        pathFound = false;
         long startTime = System.nanoTime();
         this.timeout = 1000000000 * timeoutSeconds;
         
         endVertex = new Vertex(endX, endY, 0);
-        ArrayList<Vertex> path = new ArrayList<>();
+        path = new PriorityHeap();
         path.add(new Vertex(startX, startY, 0));
-        inPath[startX][startY] = true;
         bound = heuristic(startX, startY, endX, endY);
         
         while (true) {
@@ -50,8 +50,8 @@ public class IDAStar {
                 System.out.println("Timed out!");
                 return new Result();
             }
-            double t = search(path, 0, bound);
-            if (t == -1) {
+            double t = search(0, bound);
+            if (pathFound) {
                 long timeSpent = (System.nanoTime() - startTime) / 1000000;
                 return new Result(lastVertex, lastVertex.getDistance(), visitedNodes, timeSpent);
             }
@@ -69,30 +69,29 @@ public class IDAStar {
      * @param bound the threshold of the function
      * @return double the result of the search
      */
-    private double search(ArrayList<Vertex> path, double g, double bound) {
+    private double search(double g, double bound) {
         visitedNodes++;
-        Vertex node = path.get(path.size()-1);
+        Vertex node = path.peek();
         double f = g + heuristic(node.getX(), node.getY(), endVertex.getX(), endVertex.getY());
         if (f > bound) return f;
         if (node.getX() == endVertex.getX() && node.getY() == endVertex.getY()) {
+            pathFound = true;
             lastVertex = node;
-            lastVertex.setDistance(g);
             return -1;
         }
             
         double min = Double.MAX_VALUE;
-        PriorityHeap neighbours = successors(node);
+        PriorityHeap neighbours = successors(node, g);
         while (!neighbours.isEmpty()) {
             Vertex succ = neighbours.poll();
-            if (!inPath[succ.getX()][succ.getY()]) {
+            if (!path.contains(succ)) {
                 path.add(succ);
-                inPath[succ.getX()][succ.getY()] = true;
                 double cost = g + heuristic(node.getX(), node.getY(), succ.getX(), succ.getY());
-                double t = search(path, cost, bound);
-                if (t == -1) return -1;
+                succ.setDistance(cost + heuristic(succ.getX(), succ.getY(), endVertex.getX(), endVertex.getY()));
+                double t = search(cost, bound);
+                if (pathFound) return -1;
                 if (t < min) min = t;
-                inPath[succ.getX()][succ.getY()] = false;
-                path.remove(path.size()-1);
+                path.poll();
             }
         }
         return min;
@@ -103,7 +102,7 @@ public class IDAStar {
      * @param vertex the vertex which neighbours you need to check.
      * @return a minimum heap priority queue sorted by the distances of the vertices.
      */
-    private PriorityHeap successors(Vertex vertex) {
+    private PriorityHeap successors(Vertex vertex, double g) {
         PriorityHeap heap = new PriorityHeap();
         int startX = vertex.getX();
         int startY = vertex.getY();
@@ -113,14 +112,9 @@ public class IDAStar {
                 if (x == startX && y == startY) {
                     continue;
                 }
-                if (isWithinMapLimits(x, y) && map[y][x] == '.') {
+                if (isWithinMapLimits(x, y) && map[x][y] == '.') {
                     Vertex newVertex = new Vertex(x, y, 0, vertex);
-//                    newVertex.setDistance(h(x, y, endX, endY));
-//                    if (x != startX && y != startY) {
-//                        newVertex.setDistance(vertex.getDistance() + Math.sqrt(2));
-//                    } else {
-//                        newVertex.setDistance(vertex.getDistance() + 1);
-//                    }
+                    newVertex.setDistance(g + heuristic(newVertex.getX(), newVertex.getY(), endVertex.getX(), endVertex.getY()));
                     heap.add(newVertex);
                 }
             }

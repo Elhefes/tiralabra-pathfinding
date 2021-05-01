@@ -79,6 +79,16 @@ public class PriorityHeap {
         }
     }
     
+    public boolean contains(Vertex vertex) {
+        if (index == 0) return false;
+        for (int i = 0; i < index; i++) {
+            if (vertex.equals(heap[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public int olderIndex(int index) {
         return index / 2;
     }
