@@ -45,6 +45,8 @@ public class UI extends Application {
     private TextField startYTextField;
     private TextField endXTextField;
     private TextField endYTextField;
+    private TextField timeoutField;
+    private HBox timeoutHBox;
     private Label pathLengthLabel;
     private Label nodesProcessedLabel;
     private String nodesProcessedString;
@@ -71,7 +73,7 @@ public class UI extends Application {
         
         logic = new Logic();
         mapParser = new MapParser();
-        map = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
+        map = mapParser.parseMap(new File("./maps/Berlin_0_1024.map"));
 
         borderPane = new BorderPane();
         mapGrid = new GridPane();;
@@ -107,7 +109,7 @@ public class UI extends Application {
                 startYTextField.setText(String.valueOf(y));
             } else if (setEndButton.isSelected()) {
                 if (endX != -1) {
-                    fillRect(startX, startY, Color.LIGHTGRAY);
+                    fillRect(endX, endY, Color.LIGHTGRAY);
                 }
                 endX = x;
                 endY = y;
@@ -132,9 +134,16 @@ public class UI extends Application {
         dijkstraCheckBox.setStyle("-fx-text-fill: #008000;");
         aStarCheckBox = new CheckBox("A* Search");
         aStarCheckBox.setStyle("-fx-text-fill: #0000FF;");
-        //idAStarCheckBox = new CheckBox("Iterative Deepening A*");
-        idAStarCheckBox = new CheckBox("IDA* (Unfinished, slow)");
+        idAStarCheckBox = new CheckBox("Iterative Deepening A*");
         idAStarCheckBox.setStyle("-fx-text-fill: #FF0000;");
+        
+        timeoutHBox = new HBox();
+        timeoutHBox.setSpacing(5);
+        timeoutField = new TextField("5");
+        timeoutField.setMaxWidth(50);
+        
+        timeoutHBox.getChildren().addAll(new Label("Timeout (seconds):"), timeoutField);
+        timeoutHBox.setVisible(false);
 
         runButton = new Button("Run");
         runButton.setPrefSize(120, 20);
@@ -147,9 +156,9 @@ public class UI extends Application {
         
         HBox startCoordinatesHBox = new HBox();
         startCoordinatesHBox.setSpacing(5);
-        startXTextField = new TextField("0");
+        startXTextField = new TextField("922");
         startXTextField.setMaxWidth(50);
-        startYTextField = new TextField("0");
+        startYTextField = new TextField("791");
         startYTextField.setMaxWidth(50);
         
         startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y:"), startYTextField);
@@ -159,9 +168,9 @@ public class UI extends Application {
         
         HBox endCoordinatesHBox = new HBox();
         endCoordinatesHBox.setSpacing(5);
-        endXTextField = new TextField("0");
+        endXTextField = new TextField("955");
         endXTextField.setMaxWidth(50);
-        endYTextField = new TextField("0");
+        endYTextField = new TextField("771");
         endYTextField.setMaxWidth(50);
         
         endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y:"), endYTextField);
@@ -181,12 +190,18 @@ public class UI extends Application {
                 dijkstraCheckBox,
                 aStarCheckBox,
                 idAStarCheckBox,
+                timeoutHBox,
                 runButton,
                 clearMapButton,
                 pathLengthLabel,
                 nodesProcessedLabel,
                 timeSpentLabel
         );
+        
+        idAStarCheckBox.setOnAction(event -> {
+            timeoutHBox.setVisible(idAStarCheckBox.isSelected());
+        });
+        
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
             File mapFile = logic.chooseFile();
@@ -214,6 +229,10 @@ public class UI extends Application {
             endX = Integer.parseInt(endXTextField.getText());
             endY = Integer.parseInt(endYTextField.getText());
             
+            if (timeoutField.getText().isEmpty()) {
+                timeoutField.setText("1");
+            }
+            
             if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
                 if (dijkstraCheckBox.isSelected()) {
                     Result searchResult = dijkstra.findShortestPath(startX, startY, endX, endY);
@@ -240,7 +259,9 @@ public class UI extends Application {
                 }
                 
                 if (idAStarCheckBox.isSelected()) {
-                    Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, 50);
+                    idaStar = new IDAStar(map);
+                    int timeout = Integer.parseInt(timeoutField.getText());
+                    Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, timeout);
                     if (searchResult.pathWasFound()) {
                         drawPath(searchResult.getLastVertex(), Color.RED);
                         timeSpentString += "\n-IDA*: "+ searchResult.getTimeSpent() + " ms";
@@ -281,6 +302,11 @@ public class UI extends Application {
             }
             setStartButton.setText("Set start");
             setStartButton.setSelected(false);            
+        });
+        
+        timeoutField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.matches("\\d*")) return;
+            timeoutField.setText(newValue.replaceAll("[^\\d]", ""));
         });
         
         startXTextField.setOnKeyPressed(event -> {
@@ -384,11 +410,9 @@ public class UI extends Application {
     }
     
     private void drawPath(Vertex lastVertex, Color color) {
-        System.out.println("alkaa \n");
         int i = 1;
         while (true) {
             fillRect(lastVertex.getX(), lastVertex.getY(), color);
-            System.out.println("i:" + i + ", distance: " + lastVertex.getDistance());
             i++;
             lastVertex = lastVertex.getPreviousVertex();
             if (lastVertex == null) {
@@ -431,7 +455,8 @@ public class UI extends Application {
         }
         initiateMapClickListener();
         mainStage.setWidth(map.length + 200);
-        mainStage.setHeight(700);
+        if (map.length <= 512) mainStage.setHeight(700);
+        else mainStage.setHeight(map.length);
         mainStage.setMinHeight(map.length);
     }
     

@@ -1,6 +1,6 @@
 package algorithms;
 
-import datastructures.PriorityHeap;
+import java.util.ArrayList;
 import datastructures.Result;
 import datastructures.Vertex;
 
@@ -10,110 +10,98 @@ import datastructures.Vertex;
  */
 public class IDAStar {
     private final char[][] map;
-    private boolean pathFound;
     private long timeout;
-    private int visitedNodes;
-    private double bound;
-    private Vertex startVertex;
-    private Vertex endVertex;  
+    private int processedNodes = 0;
     private Vertex lastVertex;
+    private int endX, endY;
+    private final boolean[][] visited;
+    private boolean timedOut = false;
+    private long startTime;
     
-    public IDAStar(char map[][]) {
+    public IDAStar(char[][] map) {
         this.map = map;
+        this.visited = new boolean[map.length][map[0].length];
     }
     
     /**
      * Finds the shortest path from start point to the
      * end point using Iterative Deepening A* search algorithm.
      * 
-     * @param startX starting node's x coordinate.
-     * @param startY starting node's y coordinate.
-     * @param endX ending node's x coordinate.
-     * @param endY ending node's y coordinate.
+     * @param startX starting nodes x coordinate.
+     * @param startY starting nodes y coordinate.
+     * @param endX ending nodes x coordinate.
+     * @param endY ending nodes y coordinate.
      * @param timeoutSeconds the time in seconds you want to wait until timeout.
      * @return the search result as an Result object.
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY, long timeoutSeconds) {
-        visitedNodes = 0;
-        pathFound = false;
-        long startTime = System.nanoTime();
+        this.endX = endX;
+        this.endY = endY;
         this.timeout = 1000000000 * timeoutSeconds;
+        this.lastVertex = new Vertex(startX, startY, 0, null);
+        this.visited[startY][startX] = true;
         
-        endVertex = new Vertex(endX, endY, 0);
-        PriorityHeap path = new PriorityHeap();
-        Vertex root = new Vertex(startX, startY, 0);
-        root.setDistance(h(root));
-        path.add(root);
-        bound = h(root);
+        Vertex startVertex = lastVertex;
+        Vertex endVertex = new Vertex(endX, endY, 0);
+        double bound = cost(lastVertex, endVertex);
+        
+        this.startTime = System.nanoTime();
         
         while (true) {
             if (System.nanoTime() - startTime > this.timeout) {
                 System.out.println("Timed out!");
                 return new Result();
             }
-            double t = search(path, 0, bound);
-            if (pathFound || t == -1) {
-                long timeSpent = (System.nanoTime() - startTime) / 1000000;
-                System.out.println("COUNTTI ON " + countLength(lastVertex));
-                return new Result(lastVertex, lastVertex.getDistance(), visitedNodes, timeSpent);
-            }
-            if (t == Double.MAX_VALUE) {
-                return new Result();
+            double t = search(startVertex, 0, bound);
+            if (t == -1) {
+                if (timedOut) {
+                    System.out.println("Timed out!");
+                    return new Result();
+                }
+                if (this.lastVertex.getX() == this.endX && this.lastVertex.getY() == this.endY) {
+                    long timeSpent = (System.nanoTime() - startTime) / 1000000;
+                    return new Result(lastVertex, lastVertex.getDistance(), processedNodes, timeSpent);
+                }
             }
             bound = t;
         }
-    }
+    }   
 
     /**
-     * Searches for the shortest path recursively.
-     * @param path the current search path
+     * Searches for the shortest path recursively with depth-first search.
+     * 
+     * @param node the current node thats being processed
      * @param g the cost to reach the current node
      * @param bound the threshold of the function
      * @return double the result of the search
      */
-    private double search(PriorityHeap path, double g, double bound) {
-        visitedNodes++;
-        Vertex node = path.peek();
-        double f = g + h(node);
-        if (f > bound) return f;
-        if (node.getX() == endVertex.getX() && node.getY() == endVertex.getY()) {
-            pathFound = true;
-            System.out.println("\ng: " + g);
-            lastVertex = node;
-            lastVertex.setDistance(h(node));
-            System.out.println("XDDDDD" +lastVertex.getDistance());
+    private double search(Vertex node, double g, double bound) {
+        processedNodes++;
+        if (System.nanoTime() - startTime > this.timeout) {
+            timedOut = true;
             return -1;
         }
-            
+        double f = g + heuristic(node.getX(), node.getY());
+        node.setDistance(g);
+        if (f > bound) return f;
+        if (node.getX() == endX && node.getY() == endY) {
+            lastVertex = node;
+            return -1;
+        }
+        
         double min = Double.MAX_VALUE;
-        PriorityHeap neighbours = successors(node, g);
-        while (!neighbours.isEmpty()) {
-            Vertex succ = neighbours.poll();
-            if (!path.contains(succ)) {
-                path.add(succ);
-//                double cost = g + cost(node, succ);
-//                succ.setDistance(cost + cost(succ, endVertex));
-//                double t = search(path, cost, bound);
-                double t = search(path, g + cost(node, succ), bound);
-                if (pathFound) return -1;
+        ArrayList<Vertex> neighbours = successors(node);
+        for (int i = 0; i < neighbours.size(); i++) {
+            Vertex succ = neighbours.get(i);
+            if (!this.visited[succ.getY()][succ.getX()]) {
+                this.visited[succ.getY()][succ.getX()] = true;
+                double t = search(succ, g + cost(node, succ), bound);
+                if (t == -1) return -1;
                 if (t < min) min = t;
-                path.poll();
+                this.visited[succ.getY()][succ.getX()] = false;
             }
         }
         return min;
-    }
-    
-    private double countLength(Vertex lastVertex) {
-        double length = 0;
-        while (true) {
-            Vertex nextVertex = lastVertex.getPreviousVertex();
-            if (nextVertex == null) {
-                break;
-            }
-            length += cost(lastVertex, nextVertex);
-            lastVertex = nextVertex;
-        }
-        return length;
     }
     
     /**
@@ -121,8 +109,8 @@ public class IDAStar {
      * @param vertex the vertex which neighbours you need to check.
      * @return a minimum heap priority queue sorted by the distances of the vertices.
      */
-    private PriorityHeap successors(Vertex vertex, double g) {
-        PriorityHeap heap = new PriorityHeap();
+    private ArrayList<Vertex> successors(Vertex vertex) {
+        ArrayList<Vertex> neighbours = new ArrayList<>();
         int startX = vertex.getX();
         int startY = vertex.getY();
         
@@ -131,31 +119,42 @@ public class IDAStar {
                 if (x == startX && y == startY) {
                     continue;
                 }
-                if (isWithinMapLimits(x, y) && map[x][y] == '.') {
+                if (isWithinMapLimits(x, y) && map[y][x] == '.') {
                     Vertex newVertex = new Vertex(x, y, 0, vertex);
-                    newVertex.setDistance(g + h(newVertex));
-                    heap.add(newVertex);
+                    newVertex.setDistance(cost(newVertex, vertex));
+                    neighbours.add(newVertex);
                 }
             }
         }
-        return heap;
+        return neighbours;
     }
     
     /**
-     * The heuristic function which calculates the
-     * distance from the current vertex to the end vertex.
+     * Calculates the heuristic cost from start to the end.
      * 
-     * @param startX the starting vertices X coordinate.
-     * @param startY the starting vertices Y coordinate.
-     * @param endX the ending vertices X coordinate.
-     * @param endY the ending vertices Y coordinate.
-     * @return the distance from the vertex to the end vertex.
+     * @param startX starting points x coordinate.
+     * @param startY starting points y coordinate.
+     * @return the heuristic distance between the two points.
      */
-    public double h(Vertex vertex) {
-        return cost(vertex, endVertex);
+    private double heuristic(int startX, int startY) {
+        double x = startX - endX;
+        double y = startY - endY;
+        double xAbs = x > 0 ? x : -x;
+        double yAbs = y > 0 ? y : -y;
+        double dMax = xAbs > yAbs ? xAbs : yAbs;
+        double dMin = xAbs < yAbs ? xAbs : yAbs;
+        
+        return Math.sqrt(2) * dMin + (dMax - dMin);
     }
     
-    public double cost(Vertex startVertex, Vertex endVertex) {
+    /**
+     * Calculates the direct cost from start to the end.
+     * 
+     * @param startVertex the starting vertex.
+     * @param endVertex the ending vertex. 
+     * @return the direct cost from starting vertex to to the end vertex.
+     */
+    private double cost(Vertex startVertex, Vertex endVertex) {
         return Math.sqrt(Math.pow(endVertex.getX() - startVertex.getX(), 2) + Math.pow(endVertex.getY() - startVertex.getY(), 2));
     }
     
@@ -169,4 +168,5 @@ public class IDAStar {
     private boolean isWithinMapLimits(int x, int y) {
         return (x > 0 && x < map[0].length && y > 0 && y < map.length);
     }
+    
 }
