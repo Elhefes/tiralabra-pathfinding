@@ -55,7 +55,7 @@ public class UI extends Application {
     private Dijkstra dijkstra;
     private AStar aStar;
     private IDAStar idaStar;
-    private Logic logic;
+    private FileChooser logic;
     private MapParser mapParser;
     private char[][] map;
     private int startX = -1;
@@ -71,7 +71,7 @@ public class UI extends Application {
         mainStage.setTitle("Pathfinding visualizer");
         this.mainStage = mainStage;
         
-        logic = new Logic();
+        logic = new FileChooser();
         mapParser = new MapParser();
         map = mapParser.parseMap(new File("./maps/Berlin_0_1024.map"));
 

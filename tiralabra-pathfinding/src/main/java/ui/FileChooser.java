@@ -1,10 +1,6 @@
 package ui;
 
 import java.io.File;
-import java.util.Optional;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.Region;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -12,8 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author henripal
  */
-public class Logic {
-    
+public class FileChooser {
     public File chooseFile() {
         JFileChooser chooser = new JFileChooser("./maps/");
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Map files", "map");
