@@ -1,3 +1,10 @@
+## [Week 6](#week-6)
+This week I didn't have much time for the project. The time used went to fixing some javafx dependency problems and trying to debug the IDA*. I still have no idea why it is so inefficient.
+
+Next week I have to get the algorithm fixed and start to write some documentation for the project.
+
+Time used: 6 hours.
+
 ## [Week 5](#week-5)
 This week I used a lot of time in debugging the broken IDA* algorithm, but couldn't find out why it doesn't work properly. It sometimes finds the optimal shortest path, but only when it is very short (< 100) nodes. Otherwise it takes way too long time to solve. I think the problem is that it visits too many nodes for some reason. I have no idea why. This is something I would like some comment from from the course's instructor or someone. This week I also I implemented my own PriorityQueue datastructure and the tests for it. I also made the UI use Canvas instead of bunch of Rectangles, that made the ui much more efficient in terms of performance.
 
