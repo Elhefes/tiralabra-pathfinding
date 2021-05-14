@@ -264,7 +264,7 @@ public class UI extends Application {
                     Result searchResult = idaStar.findShortestPath(startX, startY, endX, endY, timeout);
                     if (searchResult.pathWasFound()) {
                         drawPath(searchResult.getLastVertex(), Color.RED);
-                        timeSpentString += "\n-IDA*: "+ searchResult.getTimeSpent() + " ms";
+                        timeSpentString += "\n-IDA*: " + searchResult.getTimeSpent() + " ms";
                         nodesProcessedString += "\n-IDA*: " + searchResult.getProcessedNodes();
                         updateLabels(searchResult);
                     } else {
