@@ -1,7 +1,7 @@
 package algorithms;
 
-import java.util.ArrayList;
 import datastructures.Result;
+import datastructures.SuccessorList;
 import datastructures.Vertex;
 
 /**
@@ -90,7 +90,7 @@ public class IDAStar {
         }
         
         double min = Double.MAX_VALUE;
-        ArrayList<Vertex> neighbours = successors(node);
+        SuccessorList neighbours = successors(node);
         for (int i = 0; i < neighbours.size(); i++) {
             Vertex succ = neighbours.get(i);
             if (!this.visited[succ.getY()][succ.getX()]) {
@@ -109,8 +109,8 @@ public class IDAStar {
      * @param vertex the vertex which neighbours you need to check.
      * @return a minimum heap priority queue sorted by the distances of the vertices.
      */
-    private ArrayList<Vertex> successors(Vertex vertex) {
-        ArrayList<Vertex> neighbours = new ArrayList<>();
+    private SuccessorList successors(Vertex vertex) {
+        SuccessorList neighbours = new SuccessorList();
         int startX = vertex.getX();
         int startY = vertex.getY();
         
