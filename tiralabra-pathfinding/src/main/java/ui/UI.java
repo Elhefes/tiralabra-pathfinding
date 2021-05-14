@@ -73,7 +73,7 @@ public class UI extends Application {
         
         logic = new FileChooser();
         mapParser = new MapParser();
-        map = mapParser.parseMap(new File("./maps/Berlin_0_1024.map"));
+        map = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
 
         borderPane = new BorderPane();
         mapGrid = new GridPane();;
@@ -156,9 +156,9 @@ public class UI extends Application {
         
         HBox startCoordinatesHBox = new HBox();
         startCoordinatesHBox.setSpacing(5);
-        startXTextField = new TextField("922");
+        startXTextField = new TextField("0");
         startXTextField.setMaxWidth(50);
-        startYTextField = new TextField("791");
+        startYTextField = new TextField("0");
         startYTextField.setMaxWidth(50);
         
         startCoordinatesHBox.getChildren().addAll(new Label("X:"), startXTextField, new Label("Y:"), startYTextField);
@@ -168,9 +168,9 @@ public class UI extends Application {
         
         HBox endCoordinatesHBox = new HBox();
         endCoordinatesHBox.setSpacing(5);
-        endXTextField = new TextField("955");
+        endXTextField = new TextField("0");
         endXTextField.setMaxWidth(50);
-        endYTextField = new TextField("771");
+        endYTextField = new TextField("0");
         endYTextField.setMaxWidth(50);
         
         endCoordinatesHBox.getChildren().addAll(new Label("X:"), endXTextField, new Label("Y:"), endYTextField);
