@@ -3,7 +3,7 @@
 ## Junit
 
 This project uses Junit for automatic unit testing. You can run the tests yourself by running the command 
-```./gradlew run```
+```./gradlew test```
 inside the *tiralabra-pathfinding/tiralabra-pathfinding* folder. All implemented algorithms and data structures are tested.
 
 ## Performance testing
