@@ -2,22 +2,22 @@ plugins {
 	id 'application'
 	id 'jacoco'
 	id 'java'
-	id 'org.openjfx.javafxplugin' version '0.0.7'
+	id 'org.openjfx.javafxplugin' version '0.0.9'
 	id 'checkstyle'
 }
-
+ 
 checkstyle {
     toolVersion '8.36.1'
 }
-
+ 
 checkstyleMain {
     source = 'src/main/java'
 }
-
+ 
 checkstyleTest {
     source = 'src/test/java'
 }
-
+ 
 jacocoTestReport {
     reports {
         xml.enabled = true
@@ -29,34 +29,45 @@ jacocoTestReport {
 	}))
     }
 }
-
+ 
 jar {
     manifest {
         attributes(
             'Main-Class': 'ui.Main'
         )
     }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
-
+ 
 gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
 		options.compilerArgs << "-Xlint:unchecked"
     }
 }
-
+ 
 check.dependsOn jacocoTestReport
-
+ 
 mainClassName = 'ui.Main'
-
+ 
 repositories {
     jcenter()
 }
-
+ 
 dependencies {
     testImplementation 'junit:junit:4.12'
+    implementation 'org.openjfx:javafx:15'
+    compile 'org.openjfx:javafx-base:15'
+    compile 'org.openjfx:javafx-graphics:15'
+    compile 'org.openjfx:javafx-controls:15'
+    compile 'org.openjfx:javafx-fxml:15'
+    compile 'org.openjfx:javafx-swing:15'
+    compile 'org.openjfx:javafx-media:15'
+    compile 'org.openjfx:javafx-web:15'
 }
-
+ 
 javafx {
-    version = '15'
-    modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.swing', 'javafx.base' ]
+    version = "15.0.1"
+    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
 }
