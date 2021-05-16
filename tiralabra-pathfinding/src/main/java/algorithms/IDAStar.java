@@ -37,7 +37,6 @@ public class IDAStar {
     public Result findShortestPath(int startX, int startY, int endX, int endY, long timeoutSeconds) {
         this.endX = endX;
         this.endY = endY;
-        this.timeout = 1000000000 * timeoutSeconds;
         this.lastVertex = new Vertex(startX, startY, 0, null);
         this.visited[startY][startX] = true;
         
@@ -45,10 +44,11 @@ public class IDAStar {
         Vertex endVertex = new Vertex(endX, endY, 0);
         double bound = cost(lastVertex, endVertex);
         
-        this.startTime = System.nanoTime();
+        this.startTime = System.currentTimeMillis();
+        this.timeout = startTime + 1000 * timeoutSeconds;
         
         while (true) {
-            if (System.nanoTime() - startTime > this.timeout) {
+            if (System.currentTimeMillis() > this.timeout) {
                 System.out.println("Timed out!");
                 return new Result();
             }
@@ -59,7 +59,7 @@ public class IDAStar {
                     return new Result();
                 }
                 if (this.lastVertex.getX() == this.endX && this.lastVertex.getY() == this.endY) {
-                    long timeSpent = (System.nanoTime() - startTime) / 1000000;
+                    long timeSpent = System.currentTimeMillis() - startTime;
                     return new Result(lastVertex, lastVertex.getDistance(), processedNodes, timeSpent);
                 }
             }
@@ -77,7 +77,7 @@ public class IDAStar {
      */
     private double search(Vertex node, double g, double bound) {
         processedNodes++;
-        if (System.nanoTime() - startTime > this.timeout) {
+        if (System.currentTimeMillis() > this.timeout) {
             timedOut = true;
             return -1;
         }
@@ -155,7 +155,8 @@ public class IDAStar {
      * @return the direct cost from starting vertex to to the end vertex.
      */
     private double cost(Vertex startVertex, Vertex endVertex) {
-        return Math.sqrt(Math.pow(endVertex.getX() - startVertex.getX(), 2) + Math.pow(endVertex.getY() - startVertex.getY(), 2));
+        return Math.sqrt((endVertex.getX() - startVertex.getX()) * (endVertex.getX() - startVertex.getX())
+                + (endVertex.getY() - startVertex.getY()) * (endVertex.getY() - startVertex.getY()));
     }
     
     /**

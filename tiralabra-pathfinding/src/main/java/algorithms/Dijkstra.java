@@ -2,7 +2,6 @@ package algorithms;
 
 import datastructures.PriorityHeap;
 import datastructures.Result;
-import java.util.PriorityQueue;
 import datastructures.Vertex;
 
 /**
@@ -43,7 +42,7 @@ public class Dijkstra {
      * @return the search result as an Result object.
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
-        startTime = System.nanoTime();
+        startTime = System.currentTimeMillis();
         distance[startY][startX] = 0;
         heap = new PriorityHeap();
         
@@ -61,7 +60,7 @@ public class Dijkstra {
             }
             
             if (latestVertex.getX() == endX && latestVertex.getY() == endY) {
-                timeSpent = (System.nanoTime() - startTime) / 1000000;
+                timeSpent = System.currentTimeMillis() - startTime;
                 Result result = new Result(latestVertex, distance[endY][endX], processedNodes, timeSpent);
                 return result;
             }

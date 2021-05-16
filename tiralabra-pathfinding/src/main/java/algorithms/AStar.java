@@ -44,7 +44,7 @@ public class AStar {
      * @return the search result as an Result object.
      */
     public Result findShortestPath(int startX, int startY, int endX, int endY) {
-        startTime = System.nanoTime();
+        startTime = System.currentTimeMillis();
         distance[startY][startX] = 0;
         heap = new PriorityHeap();
         this.endX = endX;
@@ -64,7 +64,7 @@ public class AStar {
             }
             
             if (latestVertex.getX() == endX && latestVertex.getY() == endY) {
-                timeSpent = (System.nanoTime() - startTime) / 1000000;
+                timeSpent = System.currentTimeMillis() - startTime;
                 Result result = new Result(latestVertex, distance[endY][endX], processedNodes, timeSpent);
                 return result;
             }
@@ -122,7 +122,7 @@ public class AStar {
      * @return the distance from the vertex to the end vertex.
      */
     private double distanceToTheEnd(Vertex vertex) {
-        double distanceToEnd = Math.sqrt(Math.pow(endX - vertex.getX(), 2) + Math.pow(endY - vertex.getY(), 2));
+        double distanceToEnd = Math.sqrt((endX - vertex.getX()) * (endX - vertex.getX()) + (endY - vertex.getY()) * (endY - vertex.getY()));
         return distanceToEnd;
     }
     
