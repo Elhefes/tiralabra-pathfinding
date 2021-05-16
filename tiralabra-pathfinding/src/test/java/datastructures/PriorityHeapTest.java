@@ -55,7 +55,7 @@ public class PriorityHeapTest {
     @Test
     public void heapGrowingWorks() {
         for (int i = 0; i < 100; i++) {
-            heap.add(new Vertex(i, i ,i));
+            heap.add(new Vertex(i, i, i));
         }
         assertEquals(100, heap.getSize());
     }
