@@ -53,7 +53,10 @@ Here are the same results as charts:
 
 The y-axis represents the shortest paths length and the x-axis represents the time used by the algorithm.
 
-You should note that the y-axis values are scaled between the minimum and the maximum path length values each algorithm encountered. That's why they look almost the same speed, but in reality IDA* is much slower in many cases.
+You should note that the y-axis values are scaled between the minimum and the maximum path length values each algorithm encountered. That's why they look almost the same speed, but in reality IDA* is much slower in many cases. Here is the combined chart:
+
+![total](https://github.com/Elhefes/tiralabra-pathfinding/blob/main/documentation/images/total.png)
+Where the green line is Dijkstra, orange line is A* and the blue line is IDA*.
 
 As we can clearly see Dijkstra and A* performed very well even with longer paths. However iterative deepening A* starts to struggle already at paths longer than 200. I noticed also that IDA* struggles to find the path also with short paths with obstacles in the way of the path.
 
