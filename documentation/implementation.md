@@ -26,7 +26,7 @@ IDA* performance iterations, which all include a depth-first search. It cuts bra
 
 IDA* is designed for low-memory usage. With short paths without any obstacles in the way of the path, the algorithm can perform very well. However, with longer paths or with paths with obstacles, the IDA* performance is way worse than that of A*'s and Dijkstra's.
 
-## Possible flaws and improvements
+## Possible improvements
 It took me a long time to get a working version of iterative deepening a*, and I'm not sure if I still got it working as efficient as it could be. Possible future improvements to the program would be that I could test IDA* more with performance tests and see how it compares to the other algorithms. It would also be interesting to implement more algorithms, such as JPS.
 
 ## References
