@@ -2,7 +2,7 @@ plugins {
 	id 'application'
 	id 'jacoco'
 	id 'java'
-	id 'org.openjfx.javafxplugin' version '0.0.9'
+	id 'org.openjfx.javafxplugin' version '0.0.7'
 	id 'checkstyle'
 }
 
@@ -30,9 +30,17 @@ jacocoTestReport {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'ui.Main'
+        )
+    }
+}
+
 gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
-	options.compilerArgs << "-Xlint:unchecked"
+		options.compilerArgs << "-Xlint:unchecked"
     }
 }
 
@@ -49,6 +57,6 @@ dependencies {
 }
 
 javafx {
-    version = "15.0.1"
-    modules = [ 'javafx.controls' ]
+    modules = [ 'javafx.controls', 'javafx.fxml']
+    version = '11.0.2'
 }

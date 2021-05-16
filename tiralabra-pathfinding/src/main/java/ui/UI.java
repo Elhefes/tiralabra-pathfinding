@@ -8,6 +8,7 @@ import datastructures.Result;
 import datastructures.Vertex;
 import java.io.File;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -55,7 +56,7 @@ public class UI extends Application {
     private Dijkstra dijkstra;
     private AStar aStar;
     private IDAStar idaStar;
-    private FileChooser logic;
+    private FileChooser fileChooser;
     private MapParser mapParser;
     private char[][] map;
     private int startX = -1;
@@ -71,9 +72,16 @@ public class UI extends Application {
         mainStage.setTitle("Pathfinding visualizer");
         this.mainStage = mainStage;
         
-        logic = new FileChooser();
+        fileChooser = new FileChooser();
         mapParser = new MapParser();
-        map = mapParser.parseMap(new File("./maps/Paris_1_512.map"));
+        File mapFile = fileChooser.chooseFile();
+        
+        if (mapFile != null) {
+            map = mapParser.parseMap(mapFile);
+        } else {
+            Platform.exit();
+            System.exit(0);
+        }
 
         borderPane = new BorderPane();
         mapGrid = new GridPane();;
@@ -204,7 +212,7 @@ public class UI extends Application {
         
         
         changeMapButton.setOnMouseClicked((MouseEvent) -> {
-            File mapFile = logic.chooseFile();
+            File mapFile = fileChooser.chooseFile();
             if (mapFile != null) {
                 map = mapParser.parseMap(mapFile);
                 if (map != null) {
@@ -438,6 +446,7 @@ public class UI extends Application {
     }
     
     private void resetMap() {
+        if (map == null) return;
         int mapHeight = map.length;
         int mapLength = map[0].length;
         canvas = new Canvas(mapHeight, mapLength);
@@ -461,6 +470,7 @@ public class UI extends Application {
     }
     
     private void initiateAlgorithms() {
+        if (map == null) return;
         dijkstra = new Dijkstra(map);
         aStar = new AStar(map);
         idaStar = new IDAStar(map);
